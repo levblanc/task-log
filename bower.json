@@ -1,0 +1,10 @@
+{
+  "name": "task-log",
+  "version": "0.0.1",
+  "description": "task logger",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "backbone": "~1.2.2"
+  }
+}
