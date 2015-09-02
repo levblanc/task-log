@@ -1,10 +1,10 @@
 var express = require('express');
 var http = require('http');
 var path = require('path');
+var port = require('./portConfig');
 
 var app = express();
 var server = http.createServer(app);
-var port = 13793;
 
 app.get('/', function (req, res) {
     var fileName = 'index.html';

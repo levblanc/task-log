@@ -2,6 +2,7 @@
 
 var _            = require('lodash');
 var fs           = require('fs');
+var path         = require('path');
 var gulp         = require('gulp');
 var stylus       = require('gulp-stylus');
 var plumber      = require('gulp-plumber');
@@ -11,11 +12,9 @@ var jadeify      = require('jadeify');
 var browserSync  = require('browser-sync');
 var source       = require('vinyl-source-stream');
 var bowerResolve = require('bower-resolve');
-var nodeResolve  = require('resolve');
 var nib          = require('nib');
 
-var serverPort = 13793;
-
+var serverPort = require('./portConfig');
 var production = (process.env.NODE_ENV === 'production');
 
 /**
@@ -43,14 +42,12 @@ function getBowerPkgIds(){
 /**
  * 编译Jade文件
  */
-function compileJade(event){
-    var changedFilePath = event.path;
-    var changedFilePathLen = changedFilePath.length;
-    var appFolderIndex = changedFilePath.indexOf('app');
-    var changedFileRelPath = './' + event.path.substring(appFolderIndex, changedFilePathLen);
+function bundleJsFiles(){
+    // 只需要告诉browserify入口文件，它就能自动找到文件之间的关联
+    // 把相关的文件都打包起来
+    var appPath = path.join(__dirname, 'app/assets/js/app.js');
 
-    var b = browserify(changedFileRelPath, {
-        entries: './app/components/home/homeView.js',
+    var b = browserify(appPath, {
         // generate source maps in non-production environment
         debug: !production
     });
@@ -72,17 +69,13 @@ function compileJade(event){
 
 var options = {
     server: {
-        path: './app.js'
+        path: './server.js'
     },
     browserSync: {
         proxy: 'http://localhost:' + serverPort,
         port: 4000
     }
 };
-
-var serverFiles = [
-    './app.js'
-];
 
 /**
  * 启动server
@@ -98,7 +91,11 @@ gulp.task('server:start', function () {
  */
 gulp.task('server:restart', function () {
     server.restart(function(error) {
-        if(!error) browserSync.reload();
+        if(!error){
+            browserSync.reload();
+        }else{
+            browserSync(options.browserSync);
+        }
     });
 });
 
@@ -158,11 +155,12 @@ gulp.task('stylus', function () {
  */
 gulp.task('watch', function () {
     gulp.watch("app/index.html").on('change', browserSync.reload);
-    gulp.watch("app/components/**/*.jade", compileJade);
     gulp.watch("app/assets/css/**/*.styl", ['stylus']);
-    gulp.watch("app/components/**/*.js", compileJade);
+    gulp.watch("app/components/**/*.jade", bundleJsFiles);
+    gulp.watch("app/components/**/*.js", bundleJsFiles);
+    gulp.watch(["app/assets/js/app.js", "app/assets/js/router.js"], bundleJsFiles);
 });
 
 gulp.task('default', ['server:start', 'watch'], function() {
-    gulp.watch(serverFiles, ['server:restart']);
+    gulp.watch('./server.js', ['server:restart']);
 });
