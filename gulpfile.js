@@ -40,9 +40,9 @@ function getBowerPkgIds(){
 }
 
 /**
- * 编译Jade文件
+ * 编译Js文件
  */
-function bundleJsFiles(){
+gulp.task('bundleJsFiles', function (){
     // 只需要告诉browserify入口文件，它就能自动找到文件之间的关联
     // 把相关的文件都打包起来
     var appPath = path.join(__dirname, 'app/assets/js/app.js');
@@ -65,7 +65,7 @@ function bundleJsFiles(){
                 .pipe(browserSync.reload({ stream: true }));
 
     return stream;
-}
+});
 
 var options = {
     server: {
@@ -156,9 +156,9 @@ gulp.task('stylus', function () {
 gulp.task('watch', function () {
     gulp.watch("app/index.html").on('change', browserSync.reload);
     gulp.watch("app/assets/css/**/*.styl", ['stylus']);
-    gulp.watch("app/components/**/*.jade", bundleJsFiles);
-    gulp.watch("app/components/**/*.js", bundleJsFiles);
-    gulp.watch(["app/assets/js/app.js", "app/assets/js/router.js"], bundleJsFiles);
+    gulp.watch("app/components/**/*.jade", ['bundleJsFiles']);
+    gulp.watch("app/components/**/*.js", ['bundleJsFiles']);
+    gulp.watch(["app/assets/js/app.js", "app/assets/js/router.js"], ['bundleJsFiles']);
 });
 
 gulp.task('default', ['server:start', 'watch'], function() {
