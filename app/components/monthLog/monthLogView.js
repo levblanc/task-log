@@ -16,7 +16,6 @@ module.exports = Backbone.View.extend({
     },
 
     initialize: function (initData) {
-        this.model   = initData.model;
         this.logInfo = initData.logInfo;
 
         this.render(this.logInfo);
@@ -30,13 +29,13 @@ module.exports = Backbone.View.extend({
     addLogItem: function (e) {
         var logData = {};
 
-        logData.logNo      = ++logNo;
-        logData.logContent = this.$el.find('input').val();
+        logData.logNo   = ++logNo;
+        logData.content = this.$el.find('input').val();
         $('.logTable tbody').append(itemTpl(logData));
 
-        logData.title = this.$el.find('.logTitle').text();
-        logData.logStatus = this.$el.find('.logStatus').text();
-        this.model.save(logData);
+        // logData.title = this.$el.find('.logTitle').text();
+        // logData.logStatus = this.$el.find('.logStatus').text();
+        this.collection.create(logData);
     },
 
     deleteLogItem: function (e) {

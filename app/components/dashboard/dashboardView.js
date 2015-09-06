@@ -11,13 +11,11 @@ module.exports = Backbone.View.extend({
 
     events: {
         'click .create' : 'createLog',
-        'click .view': 'viewLog'
+        'click .view'   : 'viewLog'
     },
 
     initialize: function (initData) {
         userName   = initData.userName;
-        this.model = initData.model;
-
         this.render();
     },
 
@@ -43,11 +41,10 @@ module.exports = Backbone.View.extend({
         }
 
         logRouteArr.push(inputMonth);
-        logRouteStr = logRouteArr.join('/');
-        logData[logRouteStr] = null;
-        // this.model.save(logData);
 
-        Backbone.history.navigate(logRouteStr, { trigger: true});
+        this.collection.create(logData);
+
+        Backbone.history.navigate(logRouteArr.join('/'), { trigger: true});
     }
 
 

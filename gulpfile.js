@@ -160,6 +160,7 @@ gulp.task('watch', function () {
     gulp.watch("app/assets/css/**/*.styl", ['stylus']);
     gulp.watch("app/components/**/*.jade", ['bundleJsFiles']);
     gulp.watch("app/components/**/*.js", ['bundleJsFiles']);
+    gulp.watch("app/shared/**/*.js", ['bundleJsFiles']);
     gulp.watch(["app/assets/js/app.js", "app/assets/js/router.js"], ['bundleJsFiles']);
 });
 

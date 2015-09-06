@@ -1,6 +1,7 @@
-var $        = require('jquery')
-var Backbone = require('backbone');
-var template = require("./home.jade");
+var $         = require('jquery');
+var Backbone  = require('backbone');
+var template  = require("./home.jade");
+var UserModel = require('../../shared/collections/user').model;
 
 
 module.exports = Backbone.View.extend({
@@ -27,10 +28,8 @@ module.exports = Backbone.View.extend({
         userData.userName = userName;
         userRoute += userName;
 
-        this.model.save(userData);
+        this.collection.create(userData);
 
         Backbone.history.navigate(userRoute, { trigger: true });
     }
-
-
 });
