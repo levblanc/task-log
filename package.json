@@ -17,6 +17,7 @@
     "gulp-stylus": "^2.0.6",
     "jade": "^1.11.0",
     "jadeify": "^4.4.0",
+    "json2csv": "^2.11.0",
     "lodash": "^3.10.1",
     "nib": "^1.1.0",
     "vinyl-source-stream": "^1.1.0"

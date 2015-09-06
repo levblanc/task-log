@@ -1,21 +1,25 @@
-var $        = require('jquery')
+var $        = require('jquery');
+var _        = require('underscore');
 var Backbone = require('backbone');
 var mainTpl  = require("./monthLog.jade");
 var itemTpl  = require("./logItem.jade");
 
 var logNo = 0;
-var logId = 0;
 
 module.exports = Backbone.View.extend({
     className : 'monthLog',
 
     events: {
         'click .add'   : 'addLogItem',
-        'click .delete': 'deleteLogItem'
+        'click .delete': 'deleteLogItem',
+        'click .output': 'outputLog'
     },
 
-    initialize: function (logInfo) {
-        this.render(logInfo);
+    initialize: function (initData) {
+        this.model   = initData.model;
+        this.logInfo = initData.logInfo;
+
+        this.render(this.logInfo);
     },
 
     render: function (logInfo) {
@@ -26,15 +30,24 @@ module.exports = Backbone.View.extend({
     addLogItem: function (e) {
         var logData = {};
 
-        logData.logId      = ++logId;
         logData.logNo      = ++logNo;
         logData.logContent = this.$el.find('input').val();
-
         $('.logTable tbody').append(itemTpl(logData));
+
+        logData.title = this.$el.find('.logTitle').text();
+        logData.logStatus = this.$el.find('.logStatus').text();
+        this.model.save(logData);
     },
 
     deleteLogItem: function (e) {
-        console.dir('will delete item')
+        console.dir('will delete item');
+    },
+
+    outputLog: function (e) {
+        console.dir('in view log output func')
+        var logInfoStr = _.values(this.logInfo).join('-')
+        var outputLogRoute = ['/output-tasklog', logInfoStr].join('/');
+        Backbone.history.navigate(outputLogRoute);
     }
 
 });

@@ -7,14 +7,15 @@ var HomeView      = require('../../components/home/homeView');
 var DashboardView = require('../../components/dashboard/dashboardView');
 var MonthLogView  = require('../../components/monthLog/monthLogView');
 var UserModel     = require('../../shared/models/userModel');
+var LogModel     = require('../../shared/models/logModel');
 // var LogModel = require('../../shared/models/logModel');
 
 module.exports = Backbone.Router.extend({
     routes: {
         '' : 'home',
-        ':name': 'userDashboard',
-        '/:name/log-list': 'userLogList',
-        ':name/:year/:month': 'userMonthLog'
+        ':userName': 'userDashboard',
+        ':userName/log-list': 'userLogList',
+        ':userName/:year/:month': 'userMonthLog'
     },
 
     home: function () {
@@ -27,21 +28,30 @@ module.exports = Backbone.Router.extend({
         $('#main').empty().append(homeView.$el);
     },
 
-    userDashboard: function (name) {
-        console.dir("in "  + name +  "'s dashboard");
-        var dashboardView = new DashboardView({ name: name });
+    userDashboard: function (userName) {
+        console.dir("in "  + userName +  "'s dashboard");
+        var logModel = new LogModel();
+        var initData = {
+            model    : logModel,
+            userName : userName
+        };
+        var dashboardView = new DashboardView(initData);
         $('#main').empty().append(dashboardView.$el);
     },
 
-    userMonthLog: function (name, year, month) {
-        console.dir("in "  + name +  "'s " + year + month + " log");
+    userMonthLog: function (userName, year, month) {
+        console.dir("in "  + userName +  "'s " + year + month + " log");
+        var logModel = new LogModel();
         var logInfo = {
-            userName : name,
+            userName : userName,
             year     : year,
             month    : month
         };
-
-        var monthLogView = new MonthLogView(logInfo);
+        var initData = {
+            model  : logModel,
+            logInfo: logInfo
+        };
+        var monthLogView = new MonthLogView(initData);
         $('#main').empty().append(monthLogView.$el);
     }
 
