@@ -6,7 +6,8 @@ var path         = require('path');
 var gulp         = require('gulp');
 var stylus       = require('gulp-stylus');
 var plumber      = require('gulp-plumber');
-var server       = require('gulp-develop-server');
+// var server    = require('gulp-develop-server');
+var nodemon      = require('gulp-nodemon');
 var browserify   = require('browserify');
 var jadeify      = require('jadeify');
 var browserSync  = require('browser-sync');
@@ -39,33 +40,6 @@ function getBowerPkgIds(){
     return bowerPkgIds;
 }
 
-/**
- * 编译Js文件
- */
-gulp.task('bundleJsFiles', function (){
-    // 只需要告诉browserify入口文件，它就能自动找到文件之间的关联
-    // 把相关的文件都打包起来
-    var appPath = path.join(__dirname, 'app/assets/js/app.js');
-
-    var b = browserify(appPath, {
-        // generate source maps in non-production environment
-        debug: !production
-    });
-
-    getBowerPkgIds().forEach(function (lib) {
-        b.external(lib);
-    });
-
-    var stream = b.transform(jadeify, { compileDebug: true, pretty: true })
-                .bundle()
-                .pipe(plumber())
-                .pipe(source('./app/assets/js/main.js'))
-                .pipe(gulp.dest('./'))
-                .pipe(server())
-                .pipe(browserSync.reload({ stream: true }));
-
-    return stream;
-});
 
 var options = {
     server: {
@@ -97,6 +71,20 @@ gulp.task('server:restart', function () {
             browserSync(options.browserSync);
         }
     });
+});
+
+/**
+ * 编译Stylus
+ */
+gulp.task('stylus', function () {
+    gulp.src('./app/assets/css/**/*.styl')
+        .pipe(plumber())
+        .pipe(stylus(
+            { use: [nib()] }
+        ))
+        .pipe(gulp.dest('./app/assets/css/'))
+        // .pipe(server())
+        .pipe(browserSync.reload({ stream: true }));
 });
 
 /**
@@ -137,17 +125,31 @@ gulp.task('bundleVendors', function () {
 });
 
 /**
- * 编译Stylus
+ * 编译Js文件
  */
-gulp.task('stylus', function () {
-    gulp.src('./app/assets/css/**/*.styl')
-        .pipe(plumber())
-        .pipe(stylus(
-            { use: [nib()] }
-        ))
-        .pipe(gulp.dest('./app/assets/css/'))
-        .pipe(server())
-        .pipe(browserSync.reload({ stream: true }));
+gulp.task('bundleJsFiles', function (){
+    // 只需要告诉browserify入口文件，它就能自动找到文件之间的关联
+    // 把相关的文件都打包起来
+    var appPath = path.join(__dirname, 'app/assets/js/app.js');
+
+    var b = browserify(appPath, {
+        // generate source maps in non-production environment
+        debug: !production
+    });
+
+    getBowerPkgIds().forEach(function (lib) {
+        b.external(lib);
+    });
+
+    var stream = b.transform(jadeify, { compileDebug: true, pretty: true })
+                .bundle()
+                .pipe(plumber())
+                .pipe(source('./app/assets/js/main.js'))
+                .pipe(gulp.dest('./'))
+                // .pipe(server())
+                .pipe(browserSync.reload({ stream: true }));
+
+    return stream;
 });
 
 /**
@@ -161,6 +163,46 @@ gulp.task('watch', function () {
     gulp.watch(["app/assets/js/app.js", "app/assets/js/router.js"], ['bundleJsFiles']);
 });
 
-gulp.task('default', ['server:start', 'watch'], function() {
-    gulp.watch('./server.js', ['server:restart']);
+// we'd need a slight delay to reload browsers
+// connected to browser-sync after restarting nodemon
+var BROWSER_SYNC_RELOAD_DELAY = 500;
+
+gulp.task('nodemon', function (cb) {
+  var called = false;
+  return nodemon({
+
+    // nodemon our expressjs server
+    script: './server.js',
+
+    // watch core server file(s) that require server restart on change
+    watch: ['./server.js']
+  })
+    .on('start', function onStart() {
+      // ensure start only got called once
+    //   if (!called) { cb(); }
+      if (!called) {
+          setTimeout(function reload() {
+            browserSync.init({
+                proxy: 'http://localhost:' + serverPort,
+                port: 4000
+            });
+          }, BROWSER_SYNC_RELOAD_DELAY);
+      }
+
+      called = true;
+    })
+    .on('restart', function onRestart() {
+      // reload connected browsers after a slight delay
+      setTimeout(function reload() {
+        browserSync.reload({
+          stream: false   //
+        });
+      }, BROWSER_SYNC_RELOAD_DELAY);
+    });
 });
+
+// gulp.task('default', ['server:start', 'watch'], function() {
+//     gulp.watch('./server.js', ['server:restart']);
+// });
+//
+gulp.task('default', ['nodemon', 'watch']);
