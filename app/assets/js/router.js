@@ -24,7 +24,7 @@ module.exports = Backbone.Router.extend({
         // 没有，才显示首页请求user名称
         var userModel = new UserModel();
         var homeView  = new HomeView({ model: userModel });
-        $('#main').append(homeView.$el);
+        $('#main').empty().append(homeView.$el);
     },
 
     userDashboard: function (name) {

@@ -165,7 +165,7 @@ gulp.task('watch', function () {
 
 // we'd need a slight delay to reload browsers
 // connected to browser-sync after restarting nodemon
-var BROWSER_SYNC_RELOAD_DELAY = 500;
+var browserSyncLoadDelay = 500;
 
 gulp.task('nodemon', function (cb) {
   var called = false;
@@ -180,12 +180,12 @@ gulp.task('nodemon', function (cb) {
       // ensure start only got called once
     //   if (!called) { cb(); }
       if (!called) {
-          setTimeout(function reload() {
+        setTimeout(function () {
             browserSync.init({
                 proxy: 'http://localhost:' + serverPort,
                 port: 4000
             });
-          }, BROWSER_SYNC_RELOAD_DELAY);
+        }, browserSyncLoadDelay);
       }
 
       called = true;
@@ -193,11 +193,14 @@ gulp.task('nodemon', function (cb) {
     .on('restart', function () {
         console.log('========== restarting server ...... ==========');
       // reload connected browsers after a slight delay
-      setTimeout(function reload() {
-        browserSync.reload({
-          stream: false   //
-        });
-      }, BROWSER_SYNC_RELOAD_DELAY);
+        setTimeout(function () {
+            browserSync.reload({
+                stream: false
+            });
+        }, browserSyncLoadDelay);
+    })
+    .on('crash', function () {
+        console.log('========== app crashed, restarting server ==========');
     });
 });
 

@@ -2,7 +2,6 @@ var $        = require('jquery')
 var Backbone = require('backbone');
 var template = require("./home.jade");
 
-var userId = 0;
 
 module.exports = Backbone.View.extend({
     className : 'welcomePanel',
@@ -25,9 +24,6 @@ module.exports = Backbone.View.extend({
         var userName  = this.$el.find('input').val();
         var userRoute = '';
 
-        userId = ++userId;
-
-        userData.userId   = userId;
         userData.userName = userName;
         userRoute += userName;
 
