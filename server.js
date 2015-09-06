@@ -1,4 +1,5 @@
 var express    = require('express');
+var fs         = require('fs');
 var http       = require('http');
 var path       = require('path');
 var bodyParser = require('body-parser');
@@ -14,6 +15,11 @@ app.use(bodyParser.json());
 app.post('/user', function (req, res) {
     var body = req.body;
     res.json(body);
+    fs.writeFile('user.json', body, 'utf-8', function (err) {
+        console.log('in writefile');
+        if(err) throw err;
+        console.log('user.json saved');
+    });
 });
 
 

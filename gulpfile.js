@@ -171,13 +171,12 @@ gulp.task('nodemon', function (cb) {
   var called = false;
   return nodemon({
 
-    // nodemon our expressjs server
-    script: './server.js',
-
+    // nodemon will start our expressjs server
+    script: 'server.js',
     // watch core server file(s) that require server restart on change
-    watch: ['./server.js']
+    watch: ['server.js', 'gulpfile.js']
   })
-    .on('start', function onStart() {
+    .on('start', function () {
       // ensure start only got called once
     //   if (!called) { cb(); }
       if (!called) {
@@ -191,7 +190,8 @@ gulp.task('nodemon', function (cb) {
 
       called = true;
     })
-    .on('restart', function onRestart() {
+    .on('restart', function () {
+        console.log('========== restarting server ...... ==========');
       // reload connected browsers after a slight delay
       setTimeout(function reload() {
         browserSync.reload({
