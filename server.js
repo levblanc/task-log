@@ -15,20 +15,16 @@ app.use(express.static(path.join(__dirname, 'app/assets')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-var userDB = path.join(dbPath, 'user.json');
-var logDB  = path.join(dbPath, 'taskLog.json');
-var userId = 0;
-var logId  = 0;
+var userDB    = path.join(dbPath, 'user.json');
+var logDB     = path.join(dbPath, 'taskLog.json');
+var logListDB = path.join(dbPath, 'userLogList.json');
+var userId    = 0;
+var logId     = 0;
 
 app.post('/user', function (req, res) {
-    var userInfo    = req.body;
-    var userName    = req.body.userName;
-    var taskLogInfo = {};
+    var userInfo = req.body;
 
-    userInfo.userId      = ++ userId;
-    taskLogInfo.userId   = userInfo.userId;
-    taskLogInfo.userName = userName;
-    taskLogInfo.logList  = [];
+    userInfo.userId = ++ userId;
     res.json(userInfo);
 
     fs.readFile(userDB, 'utf-8', function (err, data) {
@@ -42,27 +38,57 @@ app.post('/user', function (req, res) {
             });
         }else{
             var userData = new Array(userInfo);
-            var taskLogData = new Array(taskLogInfo);
 
             fs.writeFile(userDB, JSON.stringify(userData), 'utf-8', function (err) {
                 if(err) throw err;
                 console.log('user.json saved');
             });
+        }
+    });
+});
 
-            fs.writeFile(logDB, JSON.stringify(taskLogData), 'utf-8', function (err) {
+app.post('/user-loglist/:name', function (req, res) {
+    var loglistItem = req.body;
+    loglistItem.userId = ++ userId;
+    loglistItem.userName = req.params.name;
+
+    res.json(loglistItem);
+
+    fs.readFile(logListDB, 'utf-8', function (err, data) {
+        if(err) throw err;
+        if(data){
+            data = JSON.parse(data);
+
+            _.each(data, function (item, index) {
+                if(item.userName === loglistItem.userName &&
+                    item.userId === loglistItem.userId){
+                    item.logList.push(loglistItem.logTime);
+                }
+            });
+
+            fs.writeFile(logListDB, JSON.stringify(data), 'utf-8', function (err) {
                 if(err) throw err;
-                console.log('taskLog.json saved');
+                console.log('userLogList.json saved');
+            });
+        }else{
+            var userLogList = [{
+                userId : loglistItem.userId,
+                userName: loglistItem.userName,
+                logList : [loglistItem.logTime]
+            }];
+
+            fs.writeFile(logListDB, JSON.stringify(userLogList), 'utf-8', function (err) {
+                if(err) throw err;
+                console.log('userLogList.json saved');
             });
         }
     });
 });
 
 app.post('/task-log/:name/:year/:month', function (req, res) {
-    var logInfo = req.body;
-
-    var reqName = req.params.name;
-    var reqYear = req.params.year;
-    var reqMonth = req.params.month;
+    var logInfo  = req.body;
+    var userName = req.params.name;
+    var logTime  = req.params.year + '-' + req.params.month;
 
     logInfo.logId = ++ logId;
     res.json(logInfo);
@@ -72,45 +98,79 @@ app.post('/task-log/:name/:year/:month', function (req, res) {
         if(data){
             data = JSON.parse(data);
 
-            _.each(data, function (item, index) {
-                if(item.userName === req.params.name){
-                    _.each(item.logList, function (log, index) {
-                        log.year === reqYear && log.month === reqMonth && log.taskLog.push(logInfo);
+            _.each(data, function (listItem, index) {
+                if(listItem.userName === req.params.name){
+                    _.each(listItem.logList, function (logItem, index) {
+                        logItem.logTime === logTime && logItem.taskLog.push(logInfo);
                     });
                 }
             });
-            console.dir(JSON.stringify(data));
+
             fs.writeFile(logDB, JSON.stringify(data), 'utf-8', function (err) {
                 if(err) throw err;
                 console.log('taskLog.json saved');
             });
         }else{
-            console.dir('no such user exists! Please check.');
+            var taskLogItem = {};
+            taskLogItem.userName = userName;
+            taskLogItem.logList = new Array({
+                logTime: logTime,
+                taskLog: new Array(logInfo)
+            });
+            var taskLog = new Array(taskLogItem);
+
+            fs.writeFile(logDB, JSON.stringify(taskLog), 'utf-8', function (err) {
+                if(err) throw err;
+                console.log('taskLog.json saved');
+            });
         }
     });
 });
 
-app.get('/output-tasklog/:logInfo', function (req, res) {
+app.get('/output-tasklog/:name/:year/:month', function (req, res) {
+    var userName = req.params.name;
+    var logTime  = req.params.year + '-' + req.params.month;
+
     fs.readFile(logDB, 'utf-8', function (err, taskLog) {
-        var csvOpts = {};
-        var csvFolderPath = path.join(__dirname, 'app/shared/csv');
-        var csvFileName = req.params.logInfo + '.csv';
-        var csvFilePath = path.join(csvFolderPath, csvFileName);
 
         if(err) throw err;
-        // 把从log中读取出来的字符串转换成JSON object
-        csvOpts.data   = JSON.parse(taskLog);
-        // 设定需要输出的column信息
-        csvOpts.fields = _.keys(_.omit(csvOpts.data[0], ['logId', 'title']));
 
-        json2csv(csvOpts, function (err, csv) {
-            if(err) throw err;
-            fs.writeFile(csvFilePath, csv, function (err) {
-                if(err) throw err;
-                console.log(csvFilePath + ' saved');
-                res.sendFile(csvFileName, { root: csvFolderPath });
+        if(taskLog){
+            var csvOpts       = {};
+            var csvFolderPath = path.join(__dirname, 'app/shared/csv');
+            var csvFileName   = userName + '-' + logTime + '.csv';
+            var csvFilePath   = path.join(csvFolderPath, csvFileName);
+            // 把从log中读取出来的字符串转换成JSON object
+            var taskLogData = JSON.parse(taskLog);
+            // 查找出符合条件的task log
+            _.each(taskLogData, function (userLog, index) {
+                // 用户名匹配
+                if(userLog.userName === userName){
+                    _.each(userLog.logList, function (logItem, index) {
+                        // log时间匹配
+                        if(logItem.logTime === logTime){
+                            csvOpts.data = logItem.taskLog;
+                        }
+                    });
+                }
             });
-        });
+
+            // 设定需要输出的column信息
+            csvOpts.fields = _.keys(_.omit(csvOpts.data[0], ['logId', 'time']));
+
+            json2csv(csvOpts, function (err, csv) {
+                console.dir('in json2csv')
+                if(err) throw err;
+                fs.writeFile(csvFilePath, csv, function (err) {
+                    if(err) throw err;
+                    console.log(csvFilePath + ' saved');
+                    console.dir(csvFileName);
+                    res.sendFile(csvFileName, { root: csvFolderPath });
+                });
+            });
+        }else{
+            console.dir('log is empty, nothing to output...');
+        }
     });
 });
 

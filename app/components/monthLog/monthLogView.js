@@ -6,6 +6,38 @@ var itemTpl  = require("./logItem.jade");
 
 var logNo = 0;
 
+function getHumanDate(currentDate){
+    var humanDate, dateArr, timeArr, year, month, date, hour, min, sec;
+
+    year  = currentDate.getFullYear();
+    month = currentDate.getMonth();
+    date  = currentDate.getDate();
+    dateArr = new Array(year, month, date);
+
+    hour  = currentDate.getHours();
+    min   = currentDate.getMinutes();
+    sec   = currentDate.getSeconds();
+    timeArr = new Array(hour, min, sec);
+
+    _.each(dateArr, function (item, index) {
+        if(item < 10){
+            item = '0' + item;
+        }
+        dateArr[index] = item;
+    });
+
+    _.each(timeArr, function (item, index) {
+        if(item < 10){
+            item = '0' + item;
+        }
+        timeArr[index] = item;
+    });
+
+    humanDate = dateArr.join('-') + ' ' + timeArr.join(':');
+
+    return humanDate;
+}
+
 module.exports = Backbone.View.extend({
     className : 'monthLog',
 
@@ -16,8 +48,8 @@ module.exports = Backbone.View.extend({
     },
 
     initialize: function (initData) {
-        this.logInfo = initData.logInfo;
-
+        this.logInfo    = initData.logInfo;
+        this.collection = initData.collection;
         this.render(this.logInfo);
     },
 
@@ -28,14 +60,13 @@ module.exports = Backbone.View.extend({
 
     addLogItem: function (e) {
         var logData = {};
-
         logData.logNo   = ++logNo;
-        logData.content = this.$el.find('input').val();
-        $('.logTable tbody').append(itemTpl(logData));
+        logData.content = this.$el.find('.logInput').val();
+        logData.time    = getHumanDate(new Date());
 
-        // logData.title = this.$el.find('.logTitle').text();
-        // logData.logStatus = this.$el.find('.logStatus').text();
-        this.collection.create(logData);
+        this.$el.find('.logTable tbody').append(itemTpl(logData));
+        this.collection.create(logData); // update 或 sync?
+        this.$el.find('.logInput').val('').focus();
     },
 
     deleteLogItem: function (e) {
@@ -44,9 +75,8 @@ module.exports = Backbone.View.extend({
 
     outputLog: function (e) {
         console.dir('in view log output func')
-        var logInfoStr = _.values(this.logInfo).join('-')
-        var outputLogRoute = ['/output-tasklog', logInfoStr].join('/');
-        Backbone.history.navigate(outputLogRoute);
+        var outputLogRoute = '/output-tasklog' + location.pathname;
+        Backbone.history.navigate(outputLogRoute, { trigger : true });
     }
 
 });

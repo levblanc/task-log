@@ -1,14 +1,17 @@
+- var outputUrlArr = new Array(userName, year, month);
+- var outputUrl = '/output-tasklog/' + outputUrlArr.join('/');
+
 button.home 返回首页
 
 .addLog
-    input(type="text" placeholder="请输入工作内容")
+    input.logInput(type="text" placeholder="请输入工作内容" autofocus)
     button.add Add
     
 .logDetail
     .logTitleWrapper
         .logTitle #{ year }年 #{ month }月总结
         .optionsBtn
-            button.output Output
+            a.output(href=outputUrl) Output
     table.logTable
         tr
             th 序号

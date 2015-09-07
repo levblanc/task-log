@@ -2,7 +2,7 @@ var $        = require('jquery')
 var Backbone = require('backbone');
 var template = require("./dashboard.jade");
 
-var userName        = null;
+var userName    = null;
 var currentYear = null;
 var renderData  = {};
 
@@ -15,13 +15,15 @@ module.exports = Backbone.View.extend({
     },
 
     initialize: function (initData) {
-        userName   = initData.userName;
+        userName        = initData.userName;
+        this.collection = initData.collection;
+
         this.render();
     },
 
     render: function () {
         renderData.userName    = userName;
-        renderData.currentYear = currentYear = new Date().getFullYear();
+        renderData.currentYear = currentYear = new Date().getFullYear().toString();
 
         this.$el.html(template(renderData));
 
@@ -29,20 +31,20 @@ module.exports = Backbone.View.extend({
     },
 
     createLog: function (e) {
-        var inputMonth  = parseInt(this.$el.find('input').val(), 10);
-        var logRouteArr = [userName, currentYear];
-        var logRouteStr = '';
-        var logData = {};
+        var inputMonth   = parseInt(this.$el.find('input').val(), 10);
+        var logRouteArr  = [userName, currentYear];
+        var logListItems = [currentYear];
 
         if(inputMonth < 10){
             inputMonth = '0' + inputMonth;
         }else{
-            inputMonth.toString();
+            inputMonth = inputMonth.toString();
         }
 
         logRouteArr.push(inputMonth);
+        logListItems.push(inputMonth);
 
-        this.collection.create(logData);
+        this.collection.create({ logTime: logListItems.join('-')});
 
         Backbone.history.navigate(logRouteArr.join('/'), { trigger: true});
     }
