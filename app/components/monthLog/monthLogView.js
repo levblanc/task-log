@@ -4,7 +4,7 @@ var Backbone = require('backbone');
 var mainTpl  = require("./monthLog.jade");
 var itemTpl  = require("./logItem.jade");
 
-var logNo = 0;
+var logNum = 0;
 
 function getHumanDate(currentDate){
     var humanDate, dateArr, timeArr, year, month, date, hour, min, sec;
@@ -51,6 +51,7 @@ module.exports = Backbone.View.extend({
     initialize: function (initData) {
         this.logInfo    = initData.logInfo;
         this.collection = initData.collection;
+
         this.render(this.logInfo);
     },
 
@@ -58,6 +59,7 @@ module.exports = Backbone.View.extend({
         var self = this;
 
         self.collection.fetch().then(function (taskLog) {
+            logNum = taskLog.length;
             logInfo.taskLog = taskLog;
             self.$el.html(mainTpl(logInfo));
         });
@@ -72,21 +74,30 @@ module.exports = Backbone.View.extend({
 
     addLogItem: function (e) {
         var logData = {};
-        logData.logNo   = ++logNo;
+        logData.logNum  = ++logNum;
         logData.content = this.$el.find('.logInput').val();
         logData.time    = getHumanDate(new Date());
 
         this.$el.find('.logTable tbody').append(itemTpl(logData));
-        this.collection.create(logData); // update 或 sync?
         this.$el.find('.logInput').val('').focus();
+
+        this.collection.create(logData); // update 或 sync?
     },
 
     deleteLogItem: function (e) {
+        // ToDo
+        // 如何从数据库删除对应的model？
+        // 使用event listener是否更好？
         console.dir('will delete item');
+        var logList = this.$el.find('tr');
+        var logIndex = $(e.currentTarget).parent().index();
+        var modelIndex = logIndex - 1;
+        var selectedModel = this.collection.at(modelIndex);
+        this.collection.remove(selectedModel);
+        logList.eq(logIndex).remove();
     },
 
     outputLog: function (e) {
-        console.dir('in view log output func')
         var outputLogRoute = '/output-tasklog' + location.pathname;
         Backbone.history.navigate(outputLogRoute, { trigger : true });
     }
