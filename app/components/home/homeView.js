@@ -16,7 +16,23 @@ module.exports = Backbone.View.extend({
     },
 
     render: function () {
-        this.$el.html(template());
+        var self = this;
+        self.collection.fetch().then(function (userData) {
+            console.dir(userData);
+            if(userData.length){
+                if(userData.length === 1){
+                    var userRoute = userData[0].userName;
+                    console.dir(userRoute)
+                    Backbone.history.navigate(userRoute, { trigger: true });
+                }
+                if(userData.length > 1){
+                    console.dir('you have two users!');
+                }
+            }else{
+                self.$el.html(template());
+            }
+        });
+
         return this;
     },
 

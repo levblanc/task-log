@@ -30,7 +30,7 @@ module.exports = Backbone.Router.extend({
         // 没有，才显示首页请求user名称
         var homeView  = new HomeView({ collection: userCollection });
 
-        $('#main').empty().append(homeView.$el);
+        $('#main').empty().append(homeView.el);
     },
 
     userDashboard: function (userName) {
@@ -42,7 +42,7 @@ module.exports = Backbone.Router.extend({
         };
         var dashboardView = new DashboardView(initData);
 
-        $('#main').empty().append(dashboardView.$el);
+        $('#main').empty().append(dashboardView.el);
     },
 
     userMonthLog: function (userName, year, month) {
@@ -60,7 +60,7 @@ module.exports = Backbone.Router.extend({
 
         var monthLogView = new MonthLogView(initData);
 
-        $('#main').empty().append(monthLogView.$el);
+        $('#main').empty().append(monthLogView.el);
     },
 
     outputTaskLog: function (userName, year, month) {

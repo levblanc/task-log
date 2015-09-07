@@ -21,6 +21,20 @@ var logListDB = path.join(dbPath, 'userLogList.json');
 var userId    = 0;
 var logId     = 0;
 
+app.get('/user', function (req, res) {
+    console.dir('in app.get /user')
+    res.set('Content-Type', 'application/json');
+    fs.readFile(userDB, 'utf-8', function (err, data) {
+        if(err) throw err;
+        if(data){
+            // data = JSON.parse(data);
+            res.send(data);
+        }else{
+            res.send([]);
+        }
+    });
+});
+
 app.post('/user', function (req, res) {
     var userInfo = req.body;
 
