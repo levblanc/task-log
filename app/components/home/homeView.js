@@ -35,7 +35,7 @@ module.exports = Backbone.View.extend({
             }
         });
 
-        return this;
+        return self;
     },
 
     nameConfirm: function (e) {

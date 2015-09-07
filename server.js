@@ -22,13 +22,27 @@ var userId    = 0;
 var logId     = 0;
 
 app.get('/user', function (req, res) {
-    console.dir('in app.get /user')
     res.set('Content-Type', 'application/json');
     fs.readFile(userDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
-            // data = JSON.parse(data);
             res.send(data);
+        }else{
+            res.send([]);
+        }
+    });
+});
+
+app.get('/user-loglist/:name', function (req, res) {
+    res.set('Content-Type', 'application/json');
+    fs.readFile(logListDB, 'utf-8', function (err, data) {
+        if(err) throw err;
+        if(data){
+            var targetUserLogList = _.find(JSON.parse(data), function (user) {
+                return user.userName === req.params.name;
+            });
+
+            res.send(targetUserLogList.logList);
         }else{
             res.send([]);
         }

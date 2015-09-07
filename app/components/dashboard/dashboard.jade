@@ -1,11 +1,16 @@
 p  Welcome Master #{ userName }!!!
 
-.addLog
-    | 新增Log
-    .currentYear #{ currentYear }年
-    input(type="text" placeholder="请输入月份")
-    button.create Create
+.createNewLog
+    .note 新增Log
+    .monthInput
+        .currentYear #{ currentYear }年
+        input(type="text" placeholder="请输入月份")
+        button.create Create
 
-.logList
-    | 查看过往的Log
-    button.view View
+.userLogList
+    .note 查看过往的Log
+    ul.logList
+     each log in userLogList 
+        li 
+            span.logTime #{ log } 
+            button.view View

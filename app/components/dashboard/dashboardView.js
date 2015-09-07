@@ -22,12 +22,17 @@ module.exports = Backbone.View.extend({
     },
 
     render: function () {
+        var self = this;
+
         renderData.userName    = userName;
         renderData.currentYear = currentYear = new Date().getFullYear().toString();
 
-        this.$el.html(template(renderData));
+        self.collection.fetch().then(function (userLogList) {
+            renderData.userLogList = userLogList;
+            self.$el.html(template(renderData));
+        });
 
-        return this;
+        return self;
     },
 
     createLog: function (e) {
@@ -46,6 +51,12 @@ module.exports = Backbone.View.extend({
 
         this.collection.create({ logTime: logListItems.join('-')});
 
+        Backbone.history.navigate(logRouteArr.join('/'), { trigger: true});
+    },
+
+    viewLog: function (e) {
+        var logRouteArr = $(e.currentTarget).siblings('.logTime').text().split('-');
+        logRouteArr.unshift(userName);
         Backbone.history.navigate(logRouteArr.join('/'), { trigger: true});
     }
 
