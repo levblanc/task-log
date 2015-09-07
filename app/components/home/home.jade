@@ -1,5 +1,13 @@
-p.salutation Welcome Dear Master!
-
-.nameInput
-    input(type="text" placeholder="请告诉我您的英文名或名字拼音")
-    button OK
+if userData
+    .chooseUser
+        .note 请选择需要创建task log的用户：
+        .availableUsers
+            each user in userData
+                button(data-user-id="#{ user.userId }") #{ user.userName }
+else
+    .createUser
+        p.salutation Welcome Dear Master!
+        .nameInput
+            input(type="text" placeholder="请告诉我您的英文名或名字拼音")
+            button OK
+    

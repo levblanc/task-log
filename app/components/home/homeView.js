@@ -20,15 +20,17 @@ module.exports = Backbone.View.extend({
         self.collection.fetch().then(function (userData) {
             console.dir(userData);
             if(userData.length){
+                // 只有一个用户时，跳转到该用户的Dashboard
                 if(userData.length === 1){
                     var userRoute = userData[0].userName;
-                    console.dir(userRoute)
                     Backbone.history.navigate(userRoute, { trigger: true });
                 }
+                // 多于一个用户名时，让用户选择
                 if(userData.length > 1){
-                    console.dir('you have two users!');
+                    self.$el.html(template({ userData: userData }));
                 }
             }else{
+                // 未创建任何用户
                 self.$el.html(template());
             }
         });

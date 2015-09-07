@@ -28,6 +28,3 @@ audio:not([controls]) {
 template {
   display: none;
 }
-body {
-  background-color: #fff;
-}
