@@ -42,9 +42,10 @@ module.exports = Backbone.View.extend({
     className : 'monthLog',
 
     events: {
-        'click .add'   : 'addLogItem',
-        'click .delete': 'deleteLogItem',
-        'click .output': 'outputLog'
+        'click .goToHome': 'goToHome',
+        'click .add'     : 'addLogItem',
+        'click .delete'  : 'deleteLogItem',
+        'click .output'  : 'outputLog'
     },
 
     initialize: function (initData) {
@@ -62,6 +63,11 @@ module.exports = Backbone.View.extend({
         });
 
         return self;
+    },
+
+    goToHome: function (e) {
+        var homeRoute = this.logInfo.userName;
+        Backbone.history.navigate(homeRoute, { trigger : true });
     },
 
     addLogItem: function (e) {
