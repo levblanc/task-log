@@ -38,11 +38,34 @@ app.get('/user-loglist/:name', function (req, res) {
     fs.readFile(logListDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
-            var targetUserLogList = _.find(JSON.parse(data), function (user) {
+            var targetUserLogList = _.result(_.find(JSON.parse(data), function (user) {
                 return user.userName === req.params.name;
-            });
+            }), 'logList');
 
-            res.send(targetUserLogList.logList);
+            res.send(targetUserLogList);
+        }else{
+            res.send([]);
+        }
+    });
+});
+
+app.get('/task-log/:name/:year/:month', function (req, res) {
+    var targetLogTime = req.params.year + '-' + req.params.month;
+
+    res.set('Content-Type', 'application/json');
+
+    fs.readFile(logDB, 'utf-8', function (err, data) {
+        if(err) throw err;
+        if(data){
+            var targetTaskLogs = _.result(_.find(JSON.parse(data), function (user) {
+                return user.userName === req.params.name;
+            }), 'logList');
+
+            var targetTaskLog = _.result(_.find(targetTaskLogs, function (log) {
+                return log.logTime === targetLogTime;
+            }), 'taskLog');
+
+            res.send(targetTaskLog);
         }else{
             res.send([]);
         }

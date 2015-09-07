@@ -18,16 +18,12 @@ module.exports = Backbone.Router.extend({
     routes: {
         '' : 'home',
         ':userName': 'userDashboard',
-        ':userName/:year/:month': 'userMonthLog',
-        'output-tasklog/:username/:year/:month': 'outputTaskLog'
+        ':userName/:year/:month': 'userMonthLog'
     },
 
     home: function () {
         console.dir('in home view');
-        // ToDo:
-        // 被请求时，先检测db里面是否已经有user
-        // 若有，立刻跳转到对应user的Dashboard
-        // 没有，才显示首页请求user名称
+
         var homeView  = new HomeView({ collection: userCollection });
 
         $('#main').empty().append(homeView.el);
@@ -61,10 +57,6 @@ module.exports = Backbone.Router.extend({
         var monthLogView = new MonthLogView(initData);
 
         $('#main').empty().append(monthLogView.el);
-    },
-
-    outputTaskLog: function (userName, year, month) {
-        console.dir("outputing " + userName + "'s log of " + year + "-" + month);
     }
 
 });

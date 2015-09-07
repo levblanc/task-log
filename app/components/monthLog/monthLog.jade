@@ -11,12 +11,20 @@ button.home 返回首页
     .logTitleWrapper
         .logTitle #{ year }年 #{ month }月总结
         .optionsBtn
-            a.output(href=outputUrl) Output
+            a.output(href=outputUrl, target='_blank') Output
     table.logTable
         tr
             th 序号
             th 内容
             th 状态
+        if taskLog
+            each logItem in taskLog
+                tr
+                    td.logNo #{ logItem.logNo }
+                    td.logContent #{ logItem.content }
+                    td.logStatus 完成
+                    td.delete(data-log-id="#{ logItem.logId }") Delete
+                    
 
         
             

@@ -54,8 +54,14 @@ module.exports = Backbone.View.extend({
     },
 
     render: function (logInfo) {
-        this.$el.html(mainTpl(logInfo));
-        return this;
+        var self = this;
+
+        self.collection.fetch().then(function (taskLog) {
+            logInfo.taskLog = taskLog;
+            self.$el.html(mainTpl(logInfo));
+        });
+
+        return self;
     },
 
     addLogItem: function (e) {
