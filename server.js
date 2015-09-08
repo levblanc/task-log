@@ -38,9 +38,10 @@ app.get('/user-loglist/:name', function (req, res) {
     fs.readFile(logListDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
-            var targetUserLogList = _.result(_.find(JSON.parse(data), function (user) {
-                return user.userName === req.params.name;
-            }), 'logList');
+            var filterOpts = {
+                userName: req.params.name
+            };
+            var targetUserLogList = _.pluck(_.filter(JSON.parse(data), filterOpts), 'logList');
 
             res.send(targetUserLogList);
         }else{
@@ -50,20 +51,18 @@ app.get('/user-loglist/:name', function (req, res) {
 });
 
 app.get('/task-log/:name/:year/:month', function (req, res) {
-    var targetLogTime = req.params.year + '-' + req.params.month;
+    var targetLogMonth = req.params.year + '-' + req.params.month;
 
     res.set('Content-Type', 'application/json');
 
     fs.readFile(logDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
-            var targetTaskLogs = _.result(_.find(JSON.parse(data), function (user) {
-                return user.userName === req.params.name;
-            }), 'logList');
-
-            var targetTaskLog = _.result(_.find(targetTaskLogs, function (log) {
-                return log.logTime === targetLogTime;
-            }), 'taskLog');
+            var filterOpts = {
+                userName: req.params.name,
+                logMonth: targetLogMonth
+            };
+            var targetTaskLog = _.filter(JSON.parse(data), filterOpts);
 
             res.send(targetTaskLog);
         }else{
@@ -108,14 +107,11 @@ app.post('/user-loglist/:name', function (req, res) {
     fs.readFile(logListDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
-            data = JSON.parse(data);
-
-            _.each(data, function (item, index) {
-                if(item.userName === loglistItem.userName &&
-                    item.userId === loglistItem.userId){
-                    item.logList.push(loglistItem.logTime);
-                }
-            });
+            var filterOpts = {
+                userName: loglistItem.userName,
+                userId  : loglistItem.userId
+            };
+            var userLogList = _.pluck(_.filter(JSON.parse(data), filterOpts), loglistItem.logTime);
 
             fs.writeFile(logListDB, JSON.stringify(data), 'utf-8', function (err) {
                 if(err) throw err;
@@ -123,7 +119,7 @@ app.post('/user-loglist/:name', function (req, res) {
             });
         }else{
             var userLogList = [{
-                userId : loglistItem.userId,
+                userId  : loglistItem.userId,
                 userName: loglistItem.userName,
                 logList : [loglistItem.logTime]
             }];
@@ -139,7 +135,7 @@ app.post('/user-loglist/:name', function (req, res) {
 app.post('/task-log/:name/:year/:month', function (req, res) {
     var logInfo  = req.body;
     var userName = req.params.name;
-    var logTime  = req.params.year + '-' + req.params.month;
+    var logMonth  = req.params.year + '-' + req.params.month;
 
     logInfo.logId = ++ logId;
     res.json(logInfo);
@@ -148,27 +144,14 @@ app.post('/task-log/:name/:year/:month', function (req, res) {
         if(err) throw err;
         if(data){
             data = JSON.parse(data);
-
-            _.each(data, function (listItem, index) {
-                if(listItem.userName === req.params.name){
-                    _.each(listItem.logList, function (logItem, index) {
-                        logItem.logTime === logTime && logItem.taskLog.push(logInfo);
-                    });
-                }
-            });
+            data.push(logInfo);
 
             fs.writeFile(logDB, JSON.stringify(data), 'utf-8', function (err) {
                 if(err) throw err;
                 console.log('taskLog.json saved');
             });
         }else{
-            var taskLogItem = {};
-            taskLogItem.userName = userName;
-            taskLogItem.logList = new Array({
-                logTime: logTime,
-                taskLog: new Array(logInfo)
-            });
-            var taskLog = new Array(taskLogItem);
+            var taskLog = new Array(logInfo);
 
             fs.writeFile(logDB, JSON.stringify(taskLog), 'utf-8', function (err) {
                 if(err) throw err;
@@ -180,7 +163,7 @@ app.post('/task-log/:name/:year/:month', function (req, res) {
 
 app.get('/output-tasklog/:name/:year/:month', function (req, res) {
     var userName = req.params.name;
-    var logTime  = req.params.year + '-' + req.params.month;
+    var logMonth  = req.params.year + '-' + req.params.month;
 
     fs.readFile(logDB, 'utf-8', function (err, taskLog) {
 
@@ -189,25 +172,21 @@ app.get('/output-tasklog/:name/:year/:month', function (req, res) {
         if(taskLog){
             var csvOpts       = {};
             var csvFolderPath = path.join(__dirname, 'app/shared/csv');
-            var csvFileName   = userName + '-' + logTime + '.csv';
+            var csvFileName   = userName + '-' + logMonth + '.csv';
             var csvFilePath   = path.join(csvFolderPath, csvFileName);
             // 把从log中读取出来的字符串转换成JSON object
             var taskLogData = JSON.parse(taskLog);
-            // 查找出符合条件的task log
-            _.each(taskLogData, function (userLog, index) {
-                // 用户名匹配
-                if(userLog.userName === userName){
-                    _.each(userLog.logList, function (logItem, index) {
-                        // log时间匹配
-                        if(logItem.logTime === logTime){
-                            csvOpts.data = logItem.taskLog;
-                        }
-                    });
-                }
-            });
+            // 查找出符合条件的task log - 用户名匹配 && log月份匹配
+            var filterOpts = {
+                userName : userName,
+                logMonth : logMonth
+            }
+            
+            csvOpts.data = _.filter(taskLogData, filterOpts);
 
             // 设定需要输出的column信息
-            csvOpts.fields = _.keys(_.omit(csvOpts.data[0], ['logId', 'time']));
+            var omitFields = ['logId', 'userName', 'logMonth', 'addTime'];
+            csvOpts.fields = _.keys(_.omit(csvOpts.data[0], omitFields));
 
             json2csv(csvOpts, function (err, csv) {
                 console.dir('in json2csv')

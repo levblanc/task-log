@@ -74,9 +74,11 @@ module.exports = Backbone.View.extend({
 
     addLogItem: function (e) {
         var logData = {};
-        logData.logNum  = ++logNum;
-        logData.content = this.$el.find('.logInput').val();
-        logData.time    = getHumanDate(new Date());
+        logData.logNum   = ++logNum;
+        logData.userName = this.logInfo.userName;        
+        logData.logMonth = this.logInfo.year + '-' + this.logInfo.month;
+        logData.addTime  = getHumanDate(new Date());
+        logData.content  = this.$el.find('.logInput').val();
 
         this.$el.find('.logTable tbody').append(itemTpl(logData));
         this.$el.find('.logInput').val('').focus();

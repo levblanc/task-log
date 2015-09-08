@@ -3,10 +3,12 @@ var Backbone = require('backbone');
 var taskLog = {};
 
 var modelSchema = {
-     "logNo"  : null,
-     "content": "",
-     "time"   : "",
-     "status" : "完成"
+     "logNum"   : null,
+     "userName" : "",
+     "logMonth" : "",
+     "addTime"  : "",
+     "content"  : "",
+     "status"   : "完成"
  };
 
 taskLog.model = Backbone.Model.extend({
