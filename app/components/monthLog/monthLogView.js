@@ -1,10 +1,9 @@
-var $        = require('jquery');
-var _        = require('underscore');
-var Backbone = require('backbone');
-var mainTpl  = require("./monthLog.jade");
-var itemTpl  = require("./logItem.jade");
-
-var logNum = 0;
+var $           = require('jquery');
+var _           = require('underscore');
+var Backbone    = require('backbone');
+var mainTpl     = require("./monthLog.jade");
+var LogItemView = require("./logItemView");
+var logNum      = 0;
 
 function getHumanDate(currentDate){
     var humanDate, dateArr, timeArr, year, month, date, hour, min, sec;
@@ -43,28 +42,26 @@ module.exports = Backbone.View.extend({
 
     events: {
         'click .goToHome': 'goToHome',
-        'click .add'     : 'addLogItem',
-        'click .delete'  : 'deleteLogItem',
+        'click .add'     : 'createLogItem',
         'click .output'  : 'outputLog'
     },
 
     initialize: function (initData) {
-        this.logInfo    = initData.logInfo;
-        this.collection = initData.collection;
+        this.logInfo  = initData.logInfo;
+        this.monthLog = initData.collection;
 
         this.render(this.logInfo);
+        this.$logList = this.$el.find('.logTable tbody');
+
+        this.listenTo(this.monthLog, 'add', this.addLogItemView);
+        this.listenTo(this.monthLog, 'reset', this.listMonthLog);
+
+        this.monthLog.fetch({ reset: true });
     },
 
     render: function (logInfo) {
-        var self = this;
-
-        self.collection.fetch().then(function (taskLog) {
-            logNum = taskLog.length;
-            logInfo.taskLog = taskLog;
-            self.$el.html(mainTpl(logInfo));
-        });
-
-        return self;
+        this.$el.html(mainTpl(logInfo));
+        return this;
     },
 
     goToHome: function (e) {
@@ -72,36 +69,25 @@ module.exports = Backbone.View.extend({
         Backbone.history.navigate(homeRoute, { trigger : true });
     },
 
-    addLogItem: function (e) {
+    createLogItem: function (e) {
         var logData = {};
         logData.logNum   = ++logNum;
-        logData.userName = this.logInfo.userName;        
+        logData.userName = this.logInfo.userName;
         logData.logMonth = this.logInfo.year + '-' + this.logInfo.month;
         logData.addTime  = getHumanDate(new Date());
         logData.content  = this.$el.find('.logInput').val();
 
-        this.$el.find('.logTable tbody').append(itemTpl(logData));
         this.$el.find('.logInput').val('').focus();
-
-        this.collection.create(logData); // update 或 sync?
+        this.monthLog.create(logData);
     },
 
-    deleteLogItem: function (e) {
-        // ToDo
-        // 如何从数据库删除对应的model？
-        // 使用event listener是否更好？
-        console.dir('will delete item');
-        var logList = this.$el.find('tr');
-        var logIndex = $(e.currentTarget).parent().index();
-        var modelIndex = logIndex - 1;
-        var selectedModel = this.collection.at(modelIndex);
-        this.collection.remove(selectedModel);
-        logList.eq(logIndex).remove();
+    addLogItemView: function (log) {
+        var logItemView = new LogItemView({ model: log });
+        this.$logList.append(logItemView.render().el);
     },
 
-    outputLog: function (e) {
-        var outputLogRoute = '/output-tasklog' + location.pathname;
-        Backbone.history.navigate(outputLogRoute, { trigger : true });
+    listMonthLog: function () {
+        this.$logList.html('');
+        this.monthLog.each(this.addLogItemView, this);
     }
-
 });

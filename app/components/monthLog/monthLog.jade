@@ -2,7 +2,7 @@
 - var outputUrl = '/output-tasklog/' + outputUrlArr.join('/');
 - var logNum = 0;
 //- ToDo
-// 表格序号由jade生成
+// 表格序号由jade生成。这样的话新增项产生不了logNum
 // delete完之后需要保存才能更新数据库
 button.goToHome 返回首页
 
@@ -20,14 +20,6 @@ button.goToHome 返回首页
             th 序号
             th 内容
             th 状态
-        if taskLog
-            each logItem in taskLog
-                - logNum = ++ logNum
-                tr
-                    td.logNo #{ logNum }
-                    td.logContent #{ logItem.content }
-                    td.logStatus 完成
-                    td.delete(data-log-id="#{ logItem.logId }") Delete
                     
 
         

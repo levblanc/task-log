@@ -181,7 +181,7 @@ app.get('/output-tasklog/:name/:year/:month', function (req, res) {
                 userName : userName,
                 logMonth : logMonth
             }
-            
+
             csvOpts.data = _.filter(taskLogData, filterOpts);
 
             // 设定需要输出的column信息
@@ -189,12 +189,9 @@ app.get('/output-tasklog/:name/:year/:month', function (req, res) {
             csvOpts.fields = _.keys(_.omit(csvOpts.data[0], omitFields));
 
             json2csv(csvOpts, function (err, csv) {
-                console.dir('in json2csv')
                 if(err) throw err;
                 fs.writeFile(csvFilePath, csv, function (err) {
                     if(err) throw err;
-                    console.log(csvFilePath + ' saved');
-                    console.dir(csvFileName);
                     res.sendFile(csvFileName, { root: csvFolderPath });
                 });
             });
