@@ -5,12 +5,11 @@ var taskLog = {};
 
 taskLog.model = Backbone.Model.extend({
     defaults: {
-         "logNum"   : null,
-         "userName" : "",
-         "logMonth" : "",
-         "addTime"  : "",
-         "content"  : "",
-         "status"   : "完成"
+        logId    : 0,
+        userName : "",
+        logMonth : "",
+        content  : "",
+        status   : "完成"
     },
     validate: function (attr, opts) {
         // body...
@@ -21,14 +20,14 @@ taskLog.collection = Backbone.Collection.extend({
     model: taskLog.model,
 
     url : function () {
-        return '/task-log' + location.pathname;
+        return '/task-log';
     },
 
-    nextLogNum: function () {
-        return this.length ? this.last().get('logMun') + 1 : 1;
+    nextLogId: function () {
+        return this.length ? this.last().get('logId') + 1 : 1;
     },
 
-    comparator: 'logNum'
+    comparator: 'logId'
 
 });
 

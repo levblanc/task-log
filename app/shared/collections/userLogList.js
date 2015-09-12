@@ -15,7 +15,7 @@ userLogList.model = Backbone.Model.extend({
 userLogList.collection = Backbone.Collection.extend({
     model: userLogList.model,
     url  : function () {
-        return '/user-loglist' + location.pathname;
+        return '/user-loglist';
     }
 });
 

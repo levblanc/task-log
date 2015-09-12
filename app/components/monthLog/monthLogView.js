@@ -3,39 +3,7 @@ var _           = require('underscore');
 var Backbone    = require('backbone');
 var mainTpl     = require("./monthLog.jade");
 var LogItemView = require("./logItemView");
-var logNum      = 0;
 
-function getHumanDate(currentDate){
-    var humanDate, dateArr, timeArr, year, month, date, hour, min, sec;
-
-    year  = currentDate.getFullYear();
-    month = currentDate.getMonth();
-    date  = currentDate.getDate();
-    dateArr = new Array(year, month, date);
-
-    hour  = currentDate.getHours();
-    min   = currentDate.getMinutes();
-    sec   = currentDate.getSeconds();
-    timeArr = new Array(hour, min, sec);
-
-    _.each(dateArr, function (item, index) {
-        if(item < 10){
-            item = '0' + item;
-        }
-        dateArr[index] = item;
-    });
-
-    _.each(timeArr, function (item, index) {
-        if(item < 10){
-            item = '0' + item;
-        }
-        timeArr[index] = item;
-    });
-
-    humanDate = dateArr.join('-') + ' ' + timeArr.join(':');
-
-    return humanDate;
-}
 
 module.exports = Backbone.View.extend({
     className : 'monthLog',
@@ -56,7 +24,13 @@ module.exports = Backbone.View.extend({
         this.listenTo(this.monthLog, 'add', this.addLogItemView);
         this.listenTo(this.monthLog, 'reset', this.listMonthLog);
 
-        this.monthLog.fetch({ reset: true });
+        this.monthLog.fetch({
+            reset: true,
+            data: {
+                userName : this.logInfo.userName,
+                logMonth : this.logInfo.year + '-' + this.logInfo.month,
+            }
+        });
     },
 
     render: function (logInfo) {
@@ -70,12 +44,12 @@ module.exports = Backbone.View.extend({
     },
 
     createLogItem: function (e) {
-        var logData = {};
-        logData.logNum   = ++logNum;
-        logData.userName = this.logInfo.userName;
-        logData.logMonth = this.logInfo.year + '-' + this.logInfo.month;
-        logData.addTime  = getHumanDate(new Date());
-        logData.content  = this.$el.find('.logInput').val();
+        var logData = {
+            logId    : this.monthLog.nextLogId(),
+            userName : this.logInfo.userName,
+            logMonth : this.logInfo.year + '-' + this.logInfo.month,
+            content  : this.$el.find('.logInput').val()
+        };
 
         this.$el.find('.logInput').val('').focus();
         this.monthLog.create(logData);
