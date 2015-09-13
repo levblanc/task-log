@@ -48,17 +48,21 @@ module.exports = Backbone.View.extend({
             userName: userName
         };
 
-        if(inputMonth < 10){
-            inputMonth = '0' + inputMonth;
+        if(!isNaN(inputMonth) && inputMonth > 0 && inputMonth < 13){
+            if(inputMonth < 10){
+                inputMonth = '0' + inputMonth;
+            }else{
+                inputMonth = inputMonth.toString();
+            }
+            logMonthArr.push(inputMonth);
+
+            logObj.logMonth = logMonthArr.join('-');
+
+            this.userLogList.create(logObj);
         }else{
-            inputMonth = inputMonth.toString();
+            alert('请输入1到12以内的数字');
+            this.$el.find('input').val('').focus();
         }
-
-        logMonthArr.push(inputMonth);
-
-        logObj.logMonth = logMonthArr.join('-');
-
-        this.userLogList.create(logObj);
     },
 
     listLogs: function (userLogListCollection) {
