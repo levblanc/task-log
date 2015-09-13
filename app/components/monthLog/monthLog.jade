@@ -1,6 +1,3 @@
-- var outputUrlArr = new Array(userName, year, month);
-- var outputUrl = '/output-tasklog/' + outputUrlArr.join('/');
-
 button.goToHome 返回首页
 
 .addLog
@@ -9,9 +6,9 @@ button.goToHome 返回首页
     
 .logDetail
     .logTitleWrapper
-        .logTitle #{ year }年 #{ month }月总结
+        .logTitle #{ logMonth }总结
         .optionsBtn
-            a.output(href=outputUrl, target='_blank') Output
+            a.output(href=outPutUrl, target='_blank') Output
     table.logTable
         tr
             th 序号

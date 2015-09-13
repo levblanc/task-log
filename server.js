@@ -106,7 +106,6 @@ app.post('/user', function (req, res) {
     var userInfo = req.body;
 
     userInfo.userId = ++ userId;
-    res.json(userInfo);
 
     fs.readFile(userDB, 'utf-8', function (err, data) {
         if(err) throw err;
@@ -115,14 +114,14 @@ app.post('/user', function (req, res) {
             data.push(userInfo);
             fs.writeFile(userDB, JSON.stringify(data), 'utf-8', function (err) {
                 if(err) throw err;
-                console.log('user.json saved');
+                res.json(userInfo);
             });
         }else{
             var userData = new Array(userInfo);
 
             fs.writeFile(userDB, JSON.stringify(userData), 'utf-8', function (err) {
                 if(err) throw err;
-                console.log('user.json saved');
+                res.json(userInfo);
             });
         }
     });
@@ -132,8 +131,6 @@ app.post('/user-loglist', function (req, res) {
     var userLogItem = req.body;
     userLogItem.id = ++ userLogItemId;
 
-    res.json(userLogItem);
-
     fs.readFile(logListDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
@@ -142,14 +139,14 @@ app.post('/user-loglist', function (req, res) {
 
             fs.writeFile(logListDB, JSON.stringify(data), 'utf-8', function (err) {
                 if(err) throw err;
-                console.log('userLogList.json saved');
+                res.json(userLogItem);
             });
         }else{
             var userLogList = [userLogItem];
 
             fs.writeFile(logListDB, JSON.stringify(userLogList), 'utf-8', function (err) {
                 if(err) throw err;
-                console.log('userLogList.json saved');
+                res.json(userLogItem);
             });
         }
     });
@@ -163,8 +160,6 @@ app.post('/task-log', function (req, res) {
     logModel.addTime = getHumanDate(new Date());
     logModel.id = ++logId;
 
-    res.json(logModel);
-
     fs.readFile(logDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
@@ -173,20 +168,21 @@ app.post('/task-log', function (req, res) {
 
             fs.writeFile(logDB, JSON.stringify(data), 'utf-8', function (err) {
                 if(err) throw err;
-                console.log('taskLog.json saved');
+                res.json(logModel);
             });
         }else{
             var taskLog = new Array(logModel);
 
             fs.writeFile(logDB, JSON.stringify(taskLog), 'utf-8', function (err) {
                 if(err) throw err;
-                console.log('taskLog.json saved');
+                res.json(logModel);
             });
         }
     });
 });
 
 app.delete('/task-log/:id', function (req, res) {
+
     fs.readFile(logDB, 'utf-8', function (err, data) {
         if(err) throw err;
 
@@ -200,43 +196,47 @@ app.delete('/task-log/:id', function (req, res) {
 
         fs.writeFile(logDB, JSON.stringify(data), 'utf-8', function (err) {
             if(err) throw err;
-            console.log('taskLog deleted');
+            res.json({
+                statusCode: 1,
+                status : 'success',
+                info: 'task log id: ' + req.params.id + ' deleted'
+            });
         });
     });
 });
 
-app.get('/output-tasklog/:name/:year/:month', function (req, res) {
-    var userName = req.params.name;
-    var logMonth  = req.params.year + '-' + req.params.month;
+app.get('/output-tasklog', function (req, res) {
+    var userName = req.query.userName;
+    var logMonth = req.query.logMonth;
 
-    fs.readFile(logDB, 'utf-8', function (err, taskLog) {
+    fs.readFile(logDB, 'utf-8', function (err, taskLogs) {
 
         if(err) throw err;
 
-        if(taskLog){
+        if(taskLogs){
             var csvOpts       = {};
-            var csvFolderPath = path.join(__dirname, 'app/shared/csv');
+            var csvFolderPath = path.join(__dirname, 'app/csv');
             var csvFileName   = userName + '-' + logMonth + '.csv';
             var csvFilePath   = path.join(csvFolderPath, csvFileName);
             // 把从log中读取出来的字符串转换成JSON object
-            var taskLogData = JSON.parse(taskLog);
+            taskLogs = JSON.parse(taskLogs);
             // 查找出符合条件的task log - 用户名匹配 && log月份匹配
             var filterOpts = {
                 userName : userName,
                 logMonth : logMonth
-            }
+            };
 
-            csvOpts.data = _.filter(taskLogData, filterOpts);
+            csvOpts.data = _.filter(taskLogs, filterOpts);
 
             // 设定需要输出的column信息
-            var omitFields = ['logId', 'userName', 'logMonth', 'addTime'];
+            var omitFields = ['id', 'userName', 'logMonth', 'addTime'];
             csvOpts.fields = _.keys(_.omit(csvOpts.data[0], omitFields));
 
             json2csv(csvOpts, function (err, csv) {
                 if(err) throw err;
                 fs.writeFile(csvFilePath, csv, function (err) {
                     if(err) throw err;
-                    res.sendFile(csvFileName, { root: csvFolderPath });
+                    res.download(csvFilePath, csvFileName);
                 });
             });
         }else{
