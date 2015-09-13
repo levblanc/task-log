@@ -8,7 +8,7 @@ module.exports = Backbone.View.extend({
     className: "chooseUser",
 
     events: {
-        'click .user': 'goToUserDashboard'
+        'click .userBtn': 'goToUserDashboard'
     },
 
     render: function () {

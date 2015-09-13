@@ -18,6 +18,7 @@ app.use(bodyParser.json());
 var userDB        = path.join(dbPath, 'user.json');
 var logDB         = path.join(dbPath, 'taskLog.json');
 var logListDB     = path.join(dbPath, 'userLogList.json');
+var userId        = 0;
 var userLogItemId = 0;
 var logId         = 0;
 
@@ -105,7 +106,7 @@ app.get('/task-log', function (req, res) {
 app.post('/user', function (req, res) {
     var userInfo = req.body;
 
-    userInfo.userId = ++ userId;
+    userInfo.id = ++ userId;
 
     fs.readFile(userDB, 'utf-8', function (err, data) {
         if(err) throw err;

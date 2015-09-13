@@ -8,7 +8,7 @@ module.exports = Backbone.View.extend({
     className : 'welcomePanel',
 
     events: {
-        'click .confirmName': 'confirmName'
+        'keypress': 'confirmName'
     },
 
     initialize: function () {
@@ -21,8 +21,10 @@ module.exports = Backbone.View.extend({
     },
 
     confirmName: function (e) {
-        var userData  = { userName : this.$el.find('input').val() };
-        this.collection.create(userData);
+        if(e.which === 13){
+            var userData  = { userName : this.$el.find('input').val() };
+            this.collection.create(userData);
+        }        
     },
 
     goToUserDashboard: function (userModel) {
@@ -31,7 +33,7 @@ module.exports = Backbone.View.extend({
     },
 
     showWelcomePanel: function (userCollection) {
-        var users = userCollection.models
+        var users = userCollection.models;
         if(users.length){
             // 只有一个用户时，跳转到该用户的Dashboard
             if(users.length === 1){
