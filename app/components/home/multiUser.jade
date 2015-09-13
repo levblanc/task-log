@@ -1,0 +1,4 @@
+.note 请选择需要创建task log的用户：
+.availableUsers
+    each user in users
+        button.user(data-user-id="#{ user.userId }") #{ user.userName }

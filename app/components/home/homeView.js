@@ -1,53 +1,52 @@
-var $         = require('jquery');
-var Backbone  = require('backbone');
-var template  = require("./home.jade");
-var UserModel = require('../../shared/collections/user').model;
+var $              = require('jquery');
+var Backbone       = require('backbone');
+var CreateUserView = require("./createUserView");
+var MultiUserView  = require("./multiUserView");
 
 
 module.exports = Backbone.View.extend({
     className : 'welcomePanel',
 
     events: {
-        'click button': 'nameConfirm'
+        'click .confirmName': 'confirmName'
     },
 
     initialize: function () {
-        this.render();
+        this.users = this.collection;
+
+        this.users.fetch({ reset: true });
+
+        this.listenTo(this.users, 'add', this.goToUserDashboard);
+        this.listenTo(this.users, 'reset', this.showWelcomePanel);
     },
 
-    render: function () {
-        var self = this;
-        self.collection.fetch().then(function (userData) {
-            console.dir(userData);
-            if(userData.length){
-                // 只有一个用户时，跳转到该用户的Dashboard
-                if(userData.length === 1){
-                    var userRoute = userData[0].userName;
-                    Backbone.history.navigate(userRoute, { trigger: true });
-                }
-                // 多于一个用户名时，让用户选择
-                if(userData.length > 1){
-                    self.$el.html(template({ userData: userData }));
-                }
-            }else{
-                // 未创建任何用户
-                self.$el.html(template());
-            }
-        });
-
-        return self;
-    },
-
-    nameConfirm: function (e) {
-        var userData  = {};
-        var userName  = this.$el.find('input').val();
-        var userRoute = '';
-
-        userData.userName = userName;
-        userRoute += userName;
-
+    confirmName: function (e) {
+        var userData  = { userName : this.$el.find('input').val() };
         this.collection.create(userData);
+    },
 
+    goToUserDashboard: function (userModel) {
+        var userRoute = userModel.toJSON().userName;
         Backbone.history.navigate(userRoute, { trigger: true });
+    },
+
+    showWelcomePanel: function (userCollection) {
+        var users = userCollection.models
+        if(users.length){
+            // 只有一个用户时，跳转到该用户的Dashboard
+            if(users.length === 1){
+                var userRoute = users[0].toJSON().userName;
+                Backbone.history.navigate(userRoute, { trigger: true });
+            }
+            // 多于一个用户名时，让用户选择
+            if(users.length > 1){
+                var multiUserView = new MultiUserView({ collection: users });
+                this.$el.html(multiUserView.render().el);
+            }
+        }else{
+            // 未创建任何用户
+            var createUserView = new CreateUserView();
+            this.$el.html(createUserView.render().el);
+        }
     }
 });
