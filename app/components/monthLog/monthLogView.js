@@ -11,7 +11,7 @@ module.exports = Backbone.View.extend({
     events: {
         'click .goToHome': 'goToHome',
         'click .add'     : 'createLogItem',
-        'click .output'  : 'outputLog'
+        'click .download'  : 'downloadLog'
     },
 
     initialize: function (initData) {
@@ -39,11 +39,11 @@ module.exports = Backbone.View.extend({
         var userNameParam = 'userName=' + this.userName;
         var logMonthParam = 'logMonth=' + this.logMonth;
 
-        outPutUrlArr = new Array(userNameParam, logMonthParam);
+        downloadUrlArr = new Array(userNameParam, logMonthParam);
 
         this.$el.html(mainTpl({
             logMonth : this.logMonth,
-            outPutUrl: '/output-tasklog?' + outPutUrlArr.join('&'),
+            downloadUrl: '/download-tasklog?' + downloadUrlArr.join('&'),
         }));
         return this;
     },

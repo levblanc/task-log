@@ -8,7 +8,7 @@ module.exports = Backbone.View.extend({
     className: "userLogList",
 
     events: {
-        'click .logMonth': 'goToMonthLog'
+        'click .listItem': 'goToMonthLog'
     },
 
     initialize: function (initData) {
@@ -25,7 +25,7 @@ module.exports = Backbone.View.extend({
     },
 
     goToMonthLog: function (e) {
-        var logMonth = $(e.currentTarget).siblings('.logMonth').text();
+        var logMonth = $(e.currentTarget).find('.logMonth').text();
         var monthLogRouteArr = [this.userName, logMonth];
 
         Backbone.history.navigate(monthLogRouteArr.join('/'), { trigger: true});

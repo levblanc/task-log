@@ -206,7 +206,7 @@ app.delete('/task-log/:id', function (req, res) {
     });
 });
 
-app.get('/output-tasklog', function (req, res) {
+app.get('/download-tasklog', function (req, res) {
     var userName = req.query.userName;
     var logMonth = req.query.logMonth;
 
