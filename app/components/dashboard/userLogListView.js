@@ -8,7 +8,7 @@ module.exports = Backbone.View.extend({
     className: "userLogList",
 
     events: {
-        'click .view': 'goToMonthLog'
+        'click .logMonth': 'goToMonthLog'
     },
 
     initialize: function (initData) {

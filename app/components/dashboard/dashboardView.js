@@ -12,7 +12,9 @@ module.exports = Backbone.View.extend({
     className : 'dashboard',
 
     events: {
-        'click .create' : 'createLog'
+        'click .createNewLog': 'showMonthInput',
+        'click .cancelBtn'   : 'hideMonthInput',
+        'keypress'           : 'createLog'
     },
 
     initialize: function (initData) {
@@ -41,27 +43,39 @@ module.exports = Backbone.View.extend({
         return this;
     },
 
+    showMonthInput: function (e) {
+        this.$el.find('.createNewLog').toggleClass('showMonthInput');
+        this.$el.find('.monthInput').slideDown('fast');
+    },
+
+    hideMonthInput: function (e) {
+        this.$el.find('.createNewLog').toggleClass('showMonthInput');
+        this.$el.find('.monthInput').slideUp('fast');
+    },
+
     createLog: function (e) {
-        var inputMonth   = parseInt(this.$el.find('input').val(), 10);
-        var logMonthArr = [currentYear];
-        var logObj = {
-            userName: userName
-        };
+        if(e.which === 13){
+            var inputMonth   = parseInt(this.$el.find('input').val(), 10);
+            var logMonthArr = [currentYear];
+            var logObj = {
+                userName: userName
+            };
 
-        if(!isNaN(inputMonth) && inputMonth > 0 && inputMonth < 13){
-            if(inputMonth < 10){
-                inputMonth = '0' + inputMonth;
+            if(!isNaN(inputMonth) && inputMonth > 0 && inputMonth < 13){
+                if(inputMonth < 10){
+                    inputMonth = '0' + inputMonth;
+                }else{
+                    inputMonth = inputMonth.toString();
+                }
+                logMonthArr.push(inputMonth);
+
+                logObj.logMonth = logMonthArr.join('-');
+
+                this.userLogList.create(logObj);
             }else{
-                inputMonth = inputMonth.toString();
+                alert('请输入1到12以内的数字');
+                this.$el.find('input').val('').focus();
             }
-            logMonthArr.push(inputMonth);
-
-            logObj.logMonth = logMonthArr.join('-');
-
-            this.userLogList.create(logObj);
-        }else{
-            alert('请输入1到12以内的数字');
-            this.$el.find('input').val('').focus();
         }
     },
 
@@ -71,7 +85,7 @@ module.exports = Backbone.View.extend({
             userName: userName
         });
 
-        this.$el.append(userLogListView.render().el);
+        this.$el.find('.dashboardContent').append(userLogListView.render().el);
     },
 
     goToMonthLog: function (logModel) {

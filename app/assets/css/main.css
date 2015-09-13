@@ -28,6 +28,160 @@ audio:not([controls]) {
 template {
   display: none;
 }
+.dashboard {
+  height: 100%;
+}
+.dashboard .header {
+  zoom: 1;
+  height: 48px;
+  line-height: 48px;
+  color: #fff;
+  font-size: 20px;
+  background-color: #5a6b77;
+  border-bottom: 1px solid #485761;
+  text-align: center;
+}
+.dashboard .header:before,
+.dashboard .header:after {
+  content: "";
+  display: table;
+}
+.dashboard .header:after {
+  clear: both;
+}
+.dashboard .header .userName {
+  padding: 0 20px;
+  font-size: 16px;
+  float: right;
+}
+.dashboard .dashboardContent {
+  zoom: 1;
+  max-width: 1000px;
+  margin: 3% auto 0;
+}
+.dashboard .dashboardContent:before,
+.dashboard .dashboardContent:after {
+  content: "";
+  display: table;
+}
+.dashboard .dashboardContent:after {
+  clear: both;
+}
+.dashboard .createMonthLog {
+  width: 25%;
+  position: relative;
+  float: right;
+}
+.dashboard .createNewLog {
+  display: block;
+  width: 80%;
+  padding: 5px 0;
+  margin: 0 auto;
+  color: #5298f7;
+  text-align: center;
+  background-color: #f9fcff;
+  position: relative;
+  z-index: 10;
+  border: 1px solid #dddee0;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.dashboard .createNewLog.showMonthInput {
+  -webkit-border-radius: 0;
+  border-radius: 0;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+.dashboard .createNewLog:hover {
+  cursor: pointer;
+  color: #fff;
+  border: 1px solid #fff;
+  background-color: rgba(82,152,252,0.8);
+}
+.dashboard .monthInput {
+  width: 80%;
+  margin: 0 auto;
+  border: 1px solid #5298fc;
+  border-top: none;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  position: absolute;
+  100%: 0;
+  margin-top: -1px;
+  margin-left: calc(10% - 1px);
+}
+.dashboard .monthInput .inputBox {
+  zoom: 1;
+  padding: 10px 10px;
+  color: #fff;
+  background-color: #5298fc;
+}
+.dashboard .monthInput .inputBox:before,
+.dashboard .monthInput .inputBox:after {
+  content: "";
+  display: table;
+}
+.dashboard .monthInput .inputBox:after {
+  clear: both;
+}
+.dashboard .monthInput .currentYear {
+  width: 30%;
+  float: left;
+}
+.dashboard .monthInput input {
+  width: 70%;
+  height: 25px;
+  line-height: 25px;
+  font-size: 16px;
+  color: #fff;
+  text-align: center;
+  outline: none;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #fff;
+  float: left;
+}
+.dashboard .monthInput ::-webkit-input-placeholder {
+  color: rgba(255,255,255,0.8);
+}
+.dashboard .monthInput .cancelBtn {
+  display: block;
+  padding: 8px 0;
+  color: #b0b8bf;
+  text-align: center;
+  font-size: 14px;
+}
+.dashboard .userLogList {
+  width: 60%;
+  text-align: center;
+  border: 1px solid #dddee0;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  float: right;
+}
+.dashboard .userLogList .note {
+  color: #5a6b77;
+  padding: 5px 0;
+  border-bottom: 1px solid #dddee0;
+}
+.dashboard .userLogList li {
+  color: #5298f7;
+  list-style: none;
+  padding: 10px 0;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+.dashboard .userLogList li:nth-child(even) {
+  background-color: #f9fcff;
+}
+.dashboard .userLogList li:hover {
+  cursor: pointer;
+  color: #fff;
+  background-color: rgba(82,152,252,0.8);
+}
 .welcomePanel {
   height: 100%;
   background-image: -webkit-linear-gradient(270deg, #5298fc 66%, #2392ff 100%);
@@ -55,6 +209,9 @@ template {
   border: none;
   border-bottom: 1px solid #fff;
 }
+.welcomePanel .nameInput ::-webkit-input-placeholder {
+  color: rgba(255,255,255,0.8);
+}
 .welcomePanel .userBtn {
   display: block;
   max-width: 150px;
@@ -65,7 +222,6 @@ template {
   color: #5298fc;
   font-size: 22px;
   font-weight: bold;
-  cursor: pointer;
   background-color: #fff;
   -webkit-border-radius: 5px;
   border-radius: 5px;
@@ -75,10 +231,17 @@ template {
   -ms-transition: all 0.5s ease;
   transition: all 0.5s ease;
 }
-body {
+body,
+ul {
   padding: 0;
   margin: 0;
 }
 #main {
   height: 100%;
+}
+.hidden {
+  display: none;
+}
+a:hover {
+  cursor: pointer;
 }

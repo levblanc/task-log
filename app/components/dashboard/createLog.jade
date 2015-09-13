@@ -1,8 +1,11 @@
-p  Welcome Master #{ userName }!!!
+.header Dashboard
+    .userName #{ userName }
 
-.createMonthLog
-    .note 新增Log
-    .monthInput
-        .currentYear #{ currentYear }年
-        input(type="text" placeholder="请输入月份")
-        button.create Create
+.dashboardContent
+    .createMonthLog 
+        a.createNewLog 新增Log
+        .monthInput.hidden
+            .inputBox
+                .currentYear #{ currentYear }年
+                input(type="text" placeholder="请输入月份")
+            a.cancelBtn Cancel
