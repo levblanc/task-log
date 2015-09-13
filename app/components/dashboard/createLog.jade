@@ -1,16 +1,8 @@
 p  Welcome Master #{ userName }!!!
 
-.createNewLog
+.createMonthLog
     .note 新增Log
     .monthInput
         .currentYear #{ currentYear }年
         input(type="text" placeholder="请输入月份")
         button.create Create
-
-.userLogList
-    .note 查看过往的Log
-    ul.logList
-     each log in userLogList 
-        li 
-            span.logTime #{ log } 
-            button.view View

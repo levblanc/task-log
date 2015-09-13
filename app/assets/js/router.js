@@ -18,7 +18,7 @@ module.exports = Backbone.Router.extend({
     routes: {
         '' : 'home',
         ':userName': 'userDashboard',
-        ':userName/:year/:month': 'userMonthLog'
+        ':userName/:logMonth': 'userMonthLog'
     },
 
     home: function () {
@@ -41,17 +41,13 @@ module.exports = Backbone.Router.extend({
         $('#main').empty().append(dashboardView.el);
     },
 
-    userMonthLog: function (userName, year, month) {
-        console.dir("in "  + userName +  "'s " + year + month + " log");
+    userMonthLog: function (userName, logMonth) {
+        console.dir("in "  + userName +  "'s " + logMonth + " log");
 
-        var logInfo = {
-            userName : userName,
-            year     : year,
-            month    : month
-        };
         var initData = {
             collection : taskLogCollection,
-            logInfo    : logInfo
+            userName : userName,
+            logMonth : logMonth
         };
 
         var monthLogView = new MonthLogView(initData);

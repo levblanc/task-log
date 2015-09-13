@@ -4,8 +4,7 @@ var userLogList = {};
 
 userLogList.model = Backbone.Model.extend({
     defaults: {
-        userId : null,
-        logTime: ""
+        logMonth: ""
     },
     validate: function (attr, opts) {
         // body...

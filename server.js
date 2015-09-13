@@ -15,11 +15,11 @@ app.use(express.static(path.join(__dirname, 'app/assets')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-var userDB    = path.join(dbPath, 'user.json');
-var logDB     = path.join(dbPath, 'taskLog.json');
-var logListDB = path.join(dbPath, 'userLogList.json');
-var userId    = 0;
-var logId     = 0;
+var userDB        = path.join(dbPath, 'user.json');
+var logDB         = path.join(dbPath, 'taskLog.json');
+var logListDB     = path.join(dbPath, 'userLogList.json');
+var userLogItemId = 0;
+var logId         = 0;
 
 function getHumanDate(currentDate){
     var humanDate, dateArr, timeArr, year, month, date, hour, min, sec;
@@ -65,15 +65,16 @@ app.get('/user', function (req, res) {
     });
 });
 
-app.get('/user-loglist/:name', function (req, res) {
+app.get('/user-loglist', function (req, res) {
     res.set('Content-Type', 'application/json');
     fs.readFile(logListDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
             var filterOpts = {
-                userName: req.params.name
+                userName: req.query.userName
             };
-            var targetUserLogList = _.pluck(_.filter(JSON.parse(data), filterOpts), 'logList');
+            // var targetUserLogList = _.pluck(_.filter(JSON.parse(data), filterOpts), 'logMonth');
+            var targetUserLogList = _.filter(JSON.parse(data), filterOpts);
 
             res.send(targetUserLogList);
         }else{
@@ -82,7 +83,6 @@ app.get('/user-loglist/:name', function (req, res) {
     });
 });
 
-// app.get('/task-log/:name/:year/:month', function (req, res) {
 app.get('/task-log', function (req, res) {
     res.set('Content-Type', 'application/json');
 
@@ -128,32 +128,24 @@ app.post('/user', function (req, res) {
     });
 });
 
-app.post('/user-loglist/:name', function (req, res) {
-    var loglistItem = req.body;
-    loglistItem.userId = ++ userId;
-    loglistItem.userName = req.params.name;
+app.post('/user-loglist', function (req, res) {
+    var userLogItem = req.body;
+    userLogItem.id = ++ userLogItemId;
 
-    res.json(loglistItem);
+    res.json(userLogItem);
 
     fs.readFile(logListDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
-            var filterOpts = {
-                userName: loglistItem.userName,
-                userId  : loglistItem.userId
-            };
-            var userLogList = _.pluck(_.filter(JSON.parse(data), filterOpts), loglistItem.logTime);
+            data = JSON.parse(data);
+            data.push(userLogItem);
 
             fs.writeFile(logListDB, JSON.stringify(data), 'utf-8', function (err) {
                 if(err) throw err;
                 console.log('userLogList.json saved');
             });
         }else{
-            var userLogList = [{
-                userId  : loglistItem.userId,
-                userName: loglistItem.userName,
-                logList : [loglistItem.logTime]
-            }];
+            var userLogList = [userLogItem];
 
             fs.writeFile(logListDB, JSON.stringify(userLogList), 'utf-8', function (err) {
                 if(err) throw err;

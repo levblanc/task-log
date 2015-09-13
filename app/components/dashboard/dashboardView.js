@@ -1,6 +1,8 @@
-var $        = require('jquery')
-var Backbone = require('backbone');
-var template = require("./dashboard.jade");
+var $               = require('jquery');
+var _               = require('underscore');
+var Backbone        = require('backbone');
+var createLogTpl    = require("./createLog.jade");
+var UserLogListView = require('./userLogListView');
 
 var userName    = null;
 var currentYear = null;
@@ -10,35 +12,41 @@ module.exports = Backbone.View.extend({
     className : 'dashboard',
 
     events: {
-        'click .create' : 'createLog',
-        'click .view'   : 'viewLog'
+        'click .create' : 'createLog'
     },
 
     initialize: function (initData) {
         userName        = initData.userName;
-        this.collection = initData.collection;
+        this.userLogList = initData.collection;
+
+        this.userLogList.fetch({
+            data: {
+                userName: userName
+            },
+            reset: true
+        });
+
+        this.listenTo(this.userLogList, 'add', this.goToMonthLog);
+        this.listenTo(this.userLogList, 'reset', this.listLogs);
 
         this.render();
     },
 
     render: function () {
-        var self = this;
-
         renderData.userName    = userName;
         renderData.currentYear = currentYear = new Date().getFullYear().toString();
 
-        self.collection.fetch().then(function (userLogList) {
-            renderData.userLogList = userLogList;
-            self.$el.html(template(renderData));
-        });
+        this.$el.html(createLogTpl(renderData));
 
-        return self;
+        return this;
     },
 
     createLog: function (e) {
         var inputMonth   = parseInt(this.$el.find('input').val(), 10);
-        var logRouteArr  = [userName, currentYear];
-        var logListItems = [currentYear];
+        var logMonthArr = [currentYear];
+        var logObj = {
+            userName: userName
+        };
 
         if(inputMonth < 10){
             inputMonth = '0' + inputMonth;
@@ -46,19 +54,24 @@ module.exports = Backbone.View.extend({
             inputMonth = inputMonth.toString();
         }
 
-        logRouteArr.push(inputMonth);
-        logListItems.push(inputMonth);
+        logMonthArr.push(inputMonth);
 
-        this.collection.create({ logTime: logListItems.join('-')});
+        logObj.logMonth = logMonthArr.join('-');
 
-        Backbone.history.navigate(logRouteArr.join('/'), { trigger: true});
+        this.userLogList.create(logObj);
     },
 
-    viewLog: function (e) {
-        var logRouteArr = $(e.currentTarget).siblings('.logTime').text().split('-');
-        logRouteArr.unshift(userName);
+    listLogs: function (userLogListCollection) {
+        var userLogListView = new UserLogListView({
+            collection: userLogListCollection,
+            userName: userName
+        });
+
+        this.$el.append(userLogListView.render().el);
+    },
+
+    goToMonthLog: function (logModel) {
+        var logRouteArr = _.values(logModel.toJSON());
         Backbone.history.navigate(logRouteArr.join('/'), { trigger: true});
     }
-
-
 });
