@@ -21,10 +21,15 @@ module.exports = Backbone.View.extend({
     },
 
     confirmName: function (e) {
+        var $nameInputVal = this.$el.find('input').val();
         if(e.which === 13){
-            var userData  = { userName : this.$el.find('input').val() };
-            this.collection.create(userData);
-        }        
+            if($nameInputVal){
+                var userData  = { userName : $nameInputVal };
+                this.collection.create(userData);
+            }else{
+                alert('请先输入姓名');
+            }
+        }
     },
 
     goToUserDashboard: function (userModel) {

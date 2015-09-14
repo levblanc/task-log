@@ -18,7 +18,7 @@ module.exports = Backbone.View.extend({
     },
 
     initialize: function (initData) {
-        userName        = initData.userName;
+        userName         = initData.userName;
         this.userLogList = initData.collection;
 
         this.userLogList.fetch({
