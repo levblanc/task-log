@@ -1,6 +1,9 @@
 .note 查看过往的Log
-ul.logList
- each log in userLogList 
-    li.listItem 
-        span.logMonth #{ log }
-        span 总结
+if userLogList.length
+    ul.logList
+     each log in userLogList 
+        li.listItem 
+            span.logMonth #{ log }
+            span 总结
+else
+    .noLog 还没有log哦，现在开始添加吧

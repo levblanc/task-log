@@ -182,6 +182,10 @@ template {
   color: #fff;
   background-color: rgba(82,152,252,0.8);
 }
+.dashboard .noLog {
+  color: #5a6b77;
+  padding: 26px 0;
+}
 .welcomePanel {
   height: 100%;
   background-image: -webkit-linear-gradient(270deg, #5298fc 66%, #2392ff 100%);
