@@ -218,7 +218,7 @@ app.get('/download-tasklog', function (req, res) {
         if(err) throw err;
 
         if(taskLogs){
-            var csvOpts       = {};
+            var csvOpts       = { data: [] };
             var csvFolderPath = path.join(__dirname, 'app/csv');
             var csvFileName   = userName + '-' + logMonth + '.csv';
             var csvFilePath   = path.join(csvFolderPath, csvFileName);
@@ -230,11 +230,17 @@ app.get('/download-tasklog', function (req, res) {
                 logMonth : logMonth
             };
 
-            csvOpts.data = _.filter(taskLogs, filterOpts);
+            var filteredData = _.filter(taskLogs, filterOpts);
 
-            // 设定需要输出的column信息
-            var omitFields = ['id', 'userName', 'logMonth', 'addTime'];
-            csvOpts.fields = _.keys(_.omit(csvOpts.data[0], omitFields));
+            _.each(filteredData, function (item, index) {
+                csvOpts.data[index] = {
+                    index  : index + 1,
+                    content: item.content,
+                    status : item.status
+                };
+            });
+
+            csvOpts.fieldNames = ['序号', '内容', '状态'];
 
             json2csv(csvOpts, function (err, csv) {
                 if(err) throw err;

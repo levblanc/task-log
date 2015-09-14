@@ -22,10 +22,6 @@ taskLog.collection = Backbone.Collection.extend({
         return '/task-log';
     },
 
-    // nextLogId: function () {
-    //     return this.length ? this.last().get('logId') + 1 : 1;
-    // },
-    //
     comparator: 'id'
 
 });
