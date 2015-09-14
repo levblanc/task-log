@@ -22,6 +22,7 @@ var userId        = 0;
 var userLogItemId = 0;
 var logId         = 0;
 
+
 function getHumanDate(currentDate){
     var humanDate, dateArr, timeArr, year, month, date, hour, min, sec;
 
@@ -70,6 +71,7 @@ app.get('/user-loglist', function (req, res) {
     res.set('Content-Type', 'application/json');
     fs.readFile(logListDB, 'utf-8', function (err, data) {
         if(err) throw err;
+
         if(data){
             var filterOpts = {
                 userName: req.query.userName
@@ -89,6 +91,7 @@ app.get('/task-log', function (req, res) {
 
     fs.readFile(logDB, 'utf-8', function (err, data) {
         if(err) throw err;
+
         if(data){
             var filterOpts = {
                 userName: req.query.userName,
@@ -183,7 +186,6 @@ app.post('/task-log', function (req, res) {
 });
 
 app.delete('/task-log/:id', function (req, res) {
-
     fs.readFile(logDB, 'utf-8', function (err, data) {
         if(err) throw err;
 
@@ -197,6 +199,7 @@ app.delete('/task-log/:id', function (req, res) {
 
         fs.writeFile(logDB, JSON.stringify(data), 'utf-8', function (err) {
             if(err) throw err;
+
             res.json({
                 statusCode: 1,
                 status : 'success',

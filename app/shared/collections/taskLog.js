@@ -5,7 +5,6 @@ var taskLog = {};
 
 taskLog.model = Backbone.Model.extend({
     defaults: {
-        logId    : 0,
         userName : "",
         logMonth : "",
         content  : "",
@@ -23,11 +22,11 @@ taskLog.collection = Backbone.Collection.extend({
         return '/task-log';
     },
 
-    nextLogId: function () {
-        return this.length ? this.last().get('logId') + 1 : 1;
-    },
-
-    comparator: 'logId'
+    // nextLogId: function () {
+    //     return this.length ? this.last().get('logId') + 1 : 1;
+    // },
+    //
+    comparator: 'id'
 
 });
 

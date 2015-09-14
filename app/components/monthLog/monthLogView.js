@@ -9,22 +9,22 @@ module.exports = Backbone.View.extend({
     className : 'monthLog',
 
     events: {
-        'click .goToHome': 'goToHome',
-        'click .add'     : 'createLogItem',
-        'click .download'  : 'downloadLog'
+        'click .goToHome' : 'goToHome',
+        'click .add'      : 'createLogItem',
+        'click .download' : 'downloadLog'
     },
 
     initialize: function (initData) {
-        this.logMonth  = initData.logMonth;
-        this.userName  = initData.userName;
+        this.logMonth = initData.logMonth;
+        this.userName = initData.userName;
         this.monthLog = initData.collection;
 
         this.render();
         this.$logList = this.$el.find('.logTable tbody');
 
-        this.listenTo(this.monthLog, 'add', this.addLogItemView);
+        this.listenTo(this.monthLog, 'add', this.addLogItem);
         this.listenTo(this.monthLog, 'reset', this.listMonthLog);
-        this.listenTo(this.monthLog, 'destroy', this.deleteLog);
+        this.listenTo(this.monthLog, 'destroy', this.refreshLogList);
 
         this.monthLog.fetch({
             reset: true,
@@ -55,7 +55,6 @@ module.exports = Backbone.View.extend({
 
     createLogItem: function (e) {
         var logData = {
-            logId    : this.monthLog.nextLogId(),
             userName : this.userName,
             logMonth : this.logMonth,
             content  : this.$el.find('.logInput').val()
@@ -65,17 +64,34 @@ module.exports = Backbone.View.extend({
         this.monthLog.create(logData);
     },
 
-    addLogItemView: function (logModel) {
-        var logItemView = new LogItemView({ model: logModel });
+    addLogItem: function (logModel, opt) {
+        var logIndex = null;
+
+        if(typeof opt === 'object'){
+            logIndex = opt.length;
+        }else if(typeof opt === 'number'){
+            logIndex = opt + 1;
+        }
+
+        var logItemView = new LogItemView({
+            model    : logModel,
+            logIndex : logIndex
+        });
         this.$logList.append(logItemView.render().el);
     },
 
     listMonthLog: function () {
-        this.monthLog.each(this.addLogItemView, this);
+        this.$logList.html('');
+        this.monthLog.each(this.addLogItem, this);
     },
 
-    deleteLog: function (logModel) {
-        console.dir('asasas');
-        console.dir(logModel);
+    refreshLogList: function (logModel) {
+        this.monthLog.fetch({
+            reset: true,
+            data: {
+                userName : this.userName,
+                logMonth : this.logMonth,
+            }
+        });
     }
 });
