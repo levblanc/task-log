@@ -18,9 +18,6 @@ app.use(bodyParser.json());
 var userDB        = path.join(dbPath, 'user.json');
 var logDB         = path.join(dbPath, 'taskLog.json');
 var logListDB     = path.join(dbPath, 'userLogList.json');
-var userId        = 0;
-var userLogItemId = 0;
-var logId         = 0;
 
 
 function getHumanDate(currentDate){
@@ -109,18 +106,19 @@ app.get('/task-log', function (req, res) {
 app.post('/user', function (req, res) {
     var userInfo = req.body;
 
-    userInfo.id = ++ userId;
-
     fs.readFile(userDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
-            data = JSON.parse(data);
+            data        = JSON.parse(data);
+            userInfo.id = data.length + 1;
             data.push(userInfo);
+
             fs.writeFile(userDB, JSON.stringify(data), 'utf-8', function (err) {
                 if(err) throw err;
                 res.json(userInfo);
             });
         }else{
+            userInfo.id  = 1;
             var userData = new Array(userInfo);
 
             fs.writeFile(userDB, JSON.stringify(userData), 'utf-8', function (err) {
@@ -138,7 +136,8 @@ app.post('/user-loglist', function (req, res) {
     fs.readFile(logListDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
-            data = JSON.parse(data);
+            data           = JSON.parse(data);
+            userLogItem.id = data.length + 1;
             data.push(userLogItem);
 
             fs.writeFile(logListDB, JSON.stringify(data), 'utf-8', function (err) {
@@ -146,7 +145,8 @@ app.post('/user-loglist', function (req, res) {
                 res.json(userLogItem);
             });
         }else{
-            var userLogList = [userLogItem];
+            userLogItem.id  = 1;
+            var userLogList = new Array(userLogItem);
 
             fs.writeFile(logListDB, JSON.stringify(userLogList), 'utf-8', function (err) {
                 if(err) throw err;
@@ -162,12 +162,12 @@ app.post('/task-log', function (req, res) {
     var logMonth = logModel.logMonth;
 
     logModel.addTime = getHumanDate(new Date());
-    logModel.id = ++logId;
 
     fs.readFile(logDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
-            data = JSON.parse(data);
+            data        = JSON.parse(data);
+            logModel.id = data.length + 1;
             data.push(logModel);
 
             fs.writeFile(logDB, JSON.stringify(data), 'utf-8', function (err) {
@@ -175,6 +175,7 @@ app.post('/task-log', function (req, res) {
                 res.json(logModel);
             });
         }else{
+            logModel.id = 1;
             var taskLog = new Array(logModel);
 
             fs.writeFile(logDB, JSON.stringify(taskLog), 'utf-8', function (err) {
