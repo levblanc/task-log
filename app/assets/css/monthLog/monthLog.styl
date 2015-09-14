@@ -1,0 +1,83 @@
+@import 'nib'
+
+.monthLog
+    height 100%
+    .header
+        clearfix()
+        height 45px
+        line-height @height
+        color #fff
+        background-color #5a6b77
+        border-bottom 1px solid #485761
+        text-align center
+        .goToDashboard
+            float left
+        .downloadBtn
+            float right
+        .options
+            padding 0 20px
+            font-size 16px
+            color #fff
+            &:hover
+                background-color #34434d
+    .addLog
+        width 600px
+        padding 10px 0
+        margin 0 auto
+        color #fff
+        text-align center
+        background-color #5298fc
+        border-bottom-left-radius 5px
+        border-bottom-right-radius 5px
+        .note
+            margin 10px 0
+        input
+            width 90%
+            height 30px
+            line-height @height
+            margin 10px 0
+            font-size 16px
+            color #fff
+            text-align center
+            outline none
+            background none
+            border none
+            border-bottom 1px solid #fff
+        ::-webkit-input-placeholder
+            color rgba(#fff, 0.8)
+    .logDetail
+        width 1000px
+        margin 20px auto 0
+        border 1px solid #dddee0
+        border-radius 5px
+        .logTable
+            width 100%
+            color #5a6b77
+            th, td
+                text-align center
+            thead
+                th
+                    padding 10px 0
+                    border-bottom 1px solid #dddee0
+            tbody
+                tr
+                    border-bottom 1px solid #dddee0
+                    &:nth-child(even)
+                        background-color #f9fcff
+                td
+                    padding 10px 0
+                .logIndex
+                    width 10%
+                .logContent
+                    width 70%
+                .logStatus
+                    width 13%
+                .delete
+                    width 7%
+                    a
+                        color #5a6b77
+                        padding 10px 12px
+                        transition all 0.3s ease
+                        &:hover
+                            color #fff
+                            background-color red

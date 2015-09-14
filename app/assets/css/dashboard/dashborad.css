@@ -2,31 +2,16 @@
   height: 100%;
 }
 .dashboard .header {
-  zoom: 1;
-  height: 48px;
-  line-height: 48px;
+  height: 45px;
+  line-height: 45px;
   color: #fff;
-  font-size: 20px;
   background-color: #5a6b77;
   border-bottom: 1px solid #485761;
   text-align: center;
 }
-.dashboard .header:before,
-.dashboard .header:after {
-  content: "";
-  display: table;
-}
-.dashboard .header:after {
-  clear: both;
-}
-.dashboard .header .userName {
-  padding: 0 20px;
-  font-size: 16px;
-  float: right;
-}
 .dashboard .dashboardContent {
   zoom: 1;
-  max-width: 1000px;
+  width: 1000px;
   margin: 3% auto 0;
 }
 .dashboard .dashboardContent:before,
@@ -45,7 +30,7 @@
 .dashboard .createNewLog {
   display: block;
   width: 80%;
-  padding: 5px 0;
+  padding: 10px 0;
   margin: 0 auto;
   color: #5298f7;
   text-align: center;
@@ -75,10 +60,6 @@
   border-top: none;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
-  position: absolute;
-  100%: 0;
-  margin-top: -1px;
-  margin-left: calc(10% - 1px);
 }
 .dashboard .monthInput .inputBox {
   zoom: 1;
@@ -96,6 +77,8 @@
 }
 .dashboard .monthInput .currentYear {
   width: 30%;
+  height: 25px;
+  line-height: 25px;
   float: left;
 }
 .dashboard .monthInput input {
@@ -122,16 +105,17 @@
   font-size: 14px;
 }
 .dashboard .userLogList {
-  width: 60%;
+  width: 75%;
+  margin-left: -2px;
   text-align: center;
   border: 1px solid #dddee0;
   -webkit-border-radius: 5px;
   border-radius: 5px;
   float: right;
 }
-.dashboard .userLogList .note {
+.dashboard .userLogList .title {
   color: #5a6b77;
-  padding: 5px 0;
+  padding: 10px 0;
   border-bottom: 1px solid #dddee0;
 }
 .dashboard .userLogList li {

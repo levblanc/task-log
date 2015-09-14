@@ -9,9 +9,9 @@ module.exports = Backbone.View.extend({
     className : 'monthLog',
 
     events: {
-        'click .goToHome' : 'goToHome',
-        'click .add'      : 'createLogItem',
-        'click .download' : 'downloadLog'
+        'click .goToDashboard' : 'goToDashboard',
+        'click .downloadBtn'   : 'downloadLog',
+        'keypress'             : 'createLogItem'
     },
 
     initialize: function (initData) {
@@ -48,20 +48,22 @@ module.exports = Backbone.View.extend({
         return this;
     },
 
-    goToHome: function (e) {
+    goToDashboard: function (e) {
         var homeRoute = this.userName;
         Backbone.history.navigate(homeRoute, { trigger : true });
     },
 
     createLogItem: function (e) {
-        var logData = {
-            userName : this.userName,
-            logMonth : this.logMonth,
-            content  : this.$el.find('.logInput').val()
-        };
+        if(e.which === 13){
+            var logData = {
+                userName : this.userName,
+                logMonth : this.logMonth,
+                content  : this.$el.find('.logInput').val()
+            };
 
-        this.$el.find('.logInput').val('').focus();
-        this.monthLog.create(logData);
+            this.$el.find('.logInput').val('').focus();
+            this.monthLog.create(logData);
+        }
     },
 
     addLogItem: function (logModel, opt) {
@@ -85,13 +87,11 @@ module.exports = Backbone.View.extend({
         this.monthLog.each(this.addLogItem, this);
     },
 
-    refreshLogList: function (logModel) {
-        this.monthLog.fetch({
-            reset: true,
-            data: {
-                userName : this.userName,
-                logMonth : this.logMonth,
-            }
-        });
+    refreshLogList: function () {
+        // destory model之后，collection会监听到
+        // 并且已经从collection中删除掉该model
+        // 同时，执行delete请求之后后端会马上同步数据库
+        // 所以前端和后端的数据是一致的，不需要重新fetch数据
+        this.listMonthLog();
     }
 });

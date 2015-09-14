@@ -49,8 +49,8 @@ module.exports = Backbone.View.extend({
     },
 
     hideMonthInput: function (e) {
-        this.$el.find('.createNewLog').toggleClass('showMonthInput');
         this.$el.find('.monthInput').slideUp('fast');
+        this.$el.find('.createNewLog').toggleClass('showMonthInput');        
     },
 
     createLog: function (e) {

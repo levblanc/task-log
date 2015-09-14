@@ -1,0 +1,116 @@
+.monthLog {
+  height: 100%;
+}
+.monthLog .header {
+  zoom: 1;
+  height: 45px;
+  line-height: 45px;
+  color: #fff;
+  background-color: #5a6b77;
+  border-bottom: 1px solid #485761;
+  text-align: center;
+}
+.monthLog .header:before,
+.monthLog .header:after {
+  content: "";
+  display: table;
+}
+.monthLog .header:after {
+  clear: both;
+}
+.monthLog .header .goToDashboard {
+  float: left;
+}
+.monthLog .header .downloadBtn {
+  float: right;
+}
+.monthLog .header .options {
+  padding: 0 20px;
+  font-size: 16px;
+  color: #fff;
+}
+.monthLog .header .options:hover {
+  background-color: #34434d;
+}
+.monthLog .addLog {
+  width: 600px;
+  padding: 10px 0;
+  margin: 0 auto;
+  color: #fff;
+  text-align: center;
+  background-color: #5298fc;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.monthLog .addLog .note {
+  margin: 10px 0;
+}
+.monthLog .addLog input {
+  width: 90%;
+  height: 30px;
+  line-height: 30px;
+  margin: 10px 0;
+  font-size: 16px;
+  color: #fff;
+  text-align: center;
+  outline: none;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #fff;
+}
+.monthLog .addLog ::-webkit-input-placeholder {
+  color: rgba(255,255,255,0.8);
+}
+.monthLog .logDetail {
+  width: 1000px;
+  margin: 20px auto 0;
+  border: 1px solid #dddee0;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.monthLog .logDetail .logTable {
+  width: 100%;
+  color: #5a6b77;
+}
+.monthLog .logDetail .logTable th,
+.monthLog .logDetail .logTable td {
+  text-align: center;
+}
+.monthLog .logDetail .logTable thead th {
+  padding: 10px 0;
+  border-bottom: 1px solid #dddee0;
+}
+.monthLog .logDetail .logTable tbody tr {
+  border-bottom: 1px solid #dddee0;
+}
+.monthLog .logDetail .logTable tbody tr:nth-child(even) {
+  background-color: #f9fcff;
+}
+.monthLog .logDetail .logTable tbody td {
+  padding: 10px 0;
+}
+.monthLog .logDetail .logTable tbody .logIndex {
+  width: 10%;
+}
+.monthLog .logDetail .logTable tbody .logContent {
+  width: 70%;
+}
+.monthLog .logDetail .logTable tbody .logStatus {
+  width: 13%;
+}
+.monthLog .logDetail .logTable tbody .delete {
+  width: 7%;
+}
+.monthLog .logDetail .logTable tbody .delete a {
+  color: #5a6b77;
+  padding: 10px 12px;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+.monthLog .logDetail .logTable tbody .delete a:hover {
+  color: #fff;
+  background-color: #f00;
+}
