@@ -235,14 +235,25 @@
   width: 90%;
   margin: 10px 0;
   font-size: 16px;
-  color: #fff;
-  text-align: center;
+  color: #5a6b77;
   outline: none;
-  background: none;
-  border: none;
+  border: 1px solid #fff;
   overflow: auto;
   resize: none;
-  border-bottom: 1px solid #fff;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.monthLog .addLog ::-webkit-input-placeholder {
+  color: rgba(90,107,119,0.6);
+}
+.monthLog .addLog ::-moz-placeholder {
+  color: rgba(90,107,119,0.6);
+}
+.monthLog .addLog :-moz-placeholder {
+  color: rgba(90,107,119,0.6);
+}
+.monthLog .addLog :-ms-input-placeholder {
+  color: rgba(90,107,119,0.6);
 }
 .monthLog .logDetail {
   width: 1000px;

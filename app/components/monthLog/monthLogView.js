@@ -55,23 +55,30 @@ module.exports = Backbone.View.extend({
     },
 
     createLogItem: function (e) {
-        if(e.which === 13){
-            enteredText = this.$el.find('.logInput').val();
-            numberOfLineBreaks = (enteredText.match(/\n/g)||[]).length;
-            console.dir(numberOfLineBreaks)
-            var logData = {
-                userName : this.userName,
-                logMonth : this.logMonth,
-                content  : this.$el.find('.logInput').val()
-            };
+        var self = this;
+        var logDataBase = {
+            userName : this.userName,
+            logMonth : this.logMonth,
+            content  : ""
+        };
 
-            // this.$el.find('.logInput').val('').focus();
-            // this.monthLog.create(logData);
+        if(e.which === 13){
+            var enteredText = self.$el.find('.logInput').val();
+            var textArr = enteredText.trim().split('\n');
+
+            _.each(textArr, function (text, index) {
+                var logData = _.clone(logDataBase);
+                logData.content = text;
+                self.monthLog.create(logData);
+            });
+
+            self.$el.find('.logInput').val('').focus();
         }
     },
 
     addLogItem: function (logModel, opt) {
         var logIndex = null;
+        var $logDetail = this.$el.find('.logDetail');
 
         if(typeof opt === 'object'){
             logIndex = opt.length;
@@ -83,12 +90,22 @@ module.exports = Backbone.View.extend({
             model    : logModel,
             logIndex : logIndex
         });
+        
+        $logDetail.hasClass('hidden') && $logDetail.removeClass('hidden');
         this.$logList.append(logItemView.render().el);
     },
 
     listMonthLog: function () {
-        this.$logList.html('');
-        this.monthLog.each(this.addLogItem, this);
+        var $logDetail = this.$el.find('.logDetail');
+        var $noLog = this.$el.find('.noLog');
+
+        if(this.monthLog.length){
+            $logDetail.removeClass('hidden');
+            this.$logList.html('');
+            this.monthLog.each(this.addLogItem, this);
+        }else{
+            !$logDetail.hasClass('hidden') && $logDetail.addClass('hidden');
+        }
     },
 
     refreshLogList: function () {
