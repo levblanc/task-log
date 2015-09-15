@@ -45,6 +45,7 @@ module.exports = Backbone.View.extend({
             logMonth : this.logMonth,
             downloadUrl: '/download-tasklog?' + downloadUrlArr.join('&'),
         }));
+
         return this;
     },
 
@@ -55,14 +56,17 @@ module.exports = Backbone.View.extend({
 
     createLogItem: function (e) {
         if(e.which === 13){
+            enteredText = this.$el.find('.logInput').val();
+            numberOfLineBreaks = (enteredText.match(/\n/g)||[]).length;
+            console.dir(numberOfLineBreaks)
             var logData = {
                 userName : this.userName,
                 logMonth : this.logMonth,
                 content  : this.$el.find('.logInput').val()
             };
 
-            this.$el.find('.logInput').val('').focus();
-            this.monthLog.create(logData);
+            // this.$el.find('.logInput').val('').focus();
+            // this.monthLog.create(logData);
         }
     },
 

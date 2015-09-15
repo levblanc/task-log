@@ -3,7 +3,7 @@
     a.downloadBtn.options(href=downloadUrl, target='_blank') Download
 .addLog
     .note 添加新条目
-    input.logInput(type="text" placeholder="请输入工作内容" autofocus)    
+    textarea.logInput(type="text" placeholder="请输入工作内容" rows="1" autofocus)    
 .logDetail    
     table.logTable
         thead
@@ -12,9 +12,3 @@
             th 状态
             th              
         tbody
-                    
-
-        
-            
-        
-    

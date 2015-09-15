@@ -45,10 +45,8 @@
 .monthLog .addLog .note {
   margin: 10px 0;
 }
-.monthLog .addLog input {
+.monthLog .addLog textarea {
   width: 90%;
-  height: 30px;
-  line-height: 30px;
   margin: 10px 0;
   font-size: 16px;
   color: #fff;
@@ -56,10 +54,9 @@
   outline: none;
   background: none;
   border: none;
+  overflow: auto;
+  resize: none;
   border-bottom: 1px solid #fff;
-}
-.monthLog .addLog ::-webkit-input-placeholder {
-  color: rgba(255,255,255,0.8);
 }
 .monthLog .logDetail {
   width: 1000px;
