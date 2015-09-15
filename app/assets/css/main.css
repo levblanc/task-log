@@ -250,6 +250,9 @@
   resize: none;
   border-bottom: 1px solid #fff;
 }
+.monthLog .addLog ::-webkit-input-placeholder {
+  color: rgba(255,255,255,0.8);
+}
 .monthLog .logDetail {
   width: 1000px;
   margin: 20px auto 0;
