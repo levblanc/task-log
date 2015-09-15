@@ -69,7 +69,7 @@ module.exports = Backbone.View.extend({
             _.each(textArr, function (text, index) {
                 var logData = _.clone(logDataBase);
                 logData.content = text;
-                self.monthLog.create(logData);
+                self.monthLog.create(logData, { wait: true });
             });
 
             self.$el.find('.logInput').val('').focus();
@@ -90,7 +90,7 @@ module.exports = Backbone.View.extend({
             model    : logModel,
             logIndex : logIndex
         });
-        
+
         $logDetail.hasClass('hidden') && $logDetail.removeClass('hidden');
         this.$logList.append(logItemView.render().el);
     },

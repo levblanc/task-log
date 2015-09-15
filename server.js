@@ -2,6 +2,7 @@ var _          = require('lodash');
 var fs         = require('fs');
 var http       = require('http');
 var path       = require('path');
+var async      = require('async');
 var bodyParser = require('body-parser');
 var express    = require('express');
 var json2csv   = require('json2csv');
@@ -104,86 +105,78 @@ app.get('/task-log', function (req, res) {
 });
 
 app.post('/user', function (req, res) {
+    var userData = null;
     var userInfo = req.body;
 
     fs.readFile(userDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
-            data        = JSON.parse(data);
-            userInfo.id = data.length + 1;
-            data.push(userInfo);
-
-            fs.writeFile(userDB, JSON.stringify(data), 'utf-8', function (err) {
-                if(err) throw err;
-                res.json(userInfo);
-            });
+            userData = JSON.parse(data);
+            userInfo.id = userData.length + 1;
+            userData.push(userInfo);
         }else{
             userInfo.id  = 1;
-            var userData = new Array(userInfo);
-
-            fs.writeFile(userDB, JSON.stringify(userData), 'utf-8', function (err) {
-                if(err) throw err;
-                res.json(userInfo);
-            });
+            userData = new Array(userInfo);
         }
+        fs.writeFile(userDB, JSON.stringify(userData), 'utf-8', function (err) {
+            if(err) throw err;
+            res.json(userInfo);
+        });
     });
 });
 
 app.post('/user-loglist', function (req, res) {
+    var userLogList = null;
     var userLogItem = req.body;
     userLogItem.id = ++ userLogItemId;
 
     fs.readFile(logListDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
-            data           = JSON.parse(data);
-            userLogItem.id = data.length + 1;
-            data.push(userLogItem);
-
-            fs.writeFile(logListDB, JSON.stringify(data), 'utf-8', function (err) {
-                if(err) throw err;
-                res.json(userLogItem);
-            });
+            userLogList = JSON.parse(data);
+            userLogItem.id = userLogList.length + 1;
+            userLogList.push(userLogItem);
         }else{
             userLogItem.id  = 1;
-            var userLogList = new Array(userLogItem);
-
-            fs.writeFile(logListDB, JSON.stringify(userLogList), 'utf-8', function (err) {
-                if(err) throw err;
-                res.json(userLogItem);
-            });
+            userLogList = new Array(userLogItem);
         }
+        fs.writeFile(logListDB, JSON.stringify(userLogList), 'utf-8', function (err) {
+            if(err) throw err;
+            res.json(userLogItem);
+        });
     });
 });
 
-app.post('/task-log', function (req, res) {
-    var logModel = req.body;
-    var userName = logModel.userName;
-    var logMonth = logModel.logMonth;
-
+// 创建queue
+// 增删log时如果有并发请求，db读写会出现问题。
+// 增加async.queue来处理。每次完成db写入，才开始下一次db读取。
+var q = async.queue(function (task, callback) {
+    var taskLog  = null;
+    var logModel = task.req.body;
     logModel.addTime = getHumanDate(new Date());
 
     fs.readFile(logDB, 'utf-8', function (err, data) {
         if(err) throw err;
         if(data){
-            data        = JSON.parse(data);
-            logModel.id = data.length + 1;
-            data.push(logModel);
-
-            fs.writeFile(logDB, JSON.stringify(data), 'utf-8', function (err) {
-                if(err) throw err;
-                res.json(logModel);
-            });
+            taskLog = JSON.parse(data);
+            logModel.id = taskLog.length + 1;
+            taskLog.push(logModel);
         }else{
             logModel.id = 1;
-            var taskLog = new Array(logModel);
-
-            fs.writeFile(logDB, JSON.stringify(taskLog), 'utf-8', function (err) {
-                if(err) throw err;
-                res.json(logModel);
-            });
+            taskLog = new Array(logModel);
         }
+        fs.writeFile(logDB, JSON.stringify(taskLog), 'utf-8', function (err) {
+            if(err) throw err;
+            task.res.json(logModel);
+            callback();
+        });
     });
+});
+
+app.post('/task-log', function (req, res) {
+    // 往queue里面push请求的数据
+    // 让它按push的顺序处理每一次的读取和写入
+    q.push({req: req, res: res});
 });
 
 app.delete('/task-log/:id', function (req, res) {
