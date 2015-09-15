@@ -4,8 +4,7 @@
 4. gulp
 
 ### TODO
-- 斟酌是否有需要引入normalize.css还是直接用nib的reset就可以
-- 查看trello的textarea css设置
+- 查看过往log列表排序，分tab展示不同年份
 - 首页输入姓名时，增加判断是否英文和数字，不接受中文、英文逗号、英文句号和其它特殊符号
 - 添加log的文字为有分行时，自动询问是否添加为多条log
 

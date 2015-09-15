@@ -5,10 +5,9 @@
 global-reset()
 
 // common styles
-html, body
+html
     font-family 'Microsoft YaHei', Helvatica, Arial, 'SongTi', 'Sans-serif'
     font-size 16px
-
 a
     color black
     text-decoration none
@@ -18,3 +17,21 @@ a
     display none
 #main
     height 100%
+// placeholder样式
+// 必须分开写，否则会被忽略
+::-webkit-input-placeholder  /* WebKit, Blink, Edge */
+    color rgba(#fff, 0.8)
+::-moz-placeholder           /* Mozilla Firefox 19+ */
+    color rgba(#fff, 0.8)
+:-moz-placeholder            /* Mozilla Firefox 4 to 18 */
+    color rgba(#fff, 0.8)
+:-ms-input-placeholder       /* IE 10-11 */
+    color rgba(#fff, 0.8)
+// 已选区域样式
+// 必须分开写，否则会被忽略
+::selection             /* WebKit/Blink Browsers */
+  background #5298fc
+  color #fff
+::-moz-selection        /* Gecko Browsers */
+  background #5298fc
+  color #fff

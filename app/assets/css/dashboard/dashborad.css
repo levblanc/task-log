@@ -94,9 +94,6 @@
   border-bottom: 1px solid #fff;
   float: left;
 }
-.dashboard .monthInput ::-webkit-input-placeholder {
-  color: rgba(255,255,255,0.8);
-}
 .dashboard .monthInput .cancelBtn {
   display: block;
   padding: 8px 0;

@@ -94,9 +94,6 @@
   border-bottom: 1px solid #fff;
   float: left;
 }
-.dashboard .monthInput ::-webkit-input-placeholder {
-  color: rgba(255,255,255,0.8);
-}
 .dashboard .monthInput .cancelBtn {
   display: block;
   padding: 8px 0;
@@ -167,9 +164,6 @@
   outline: none;
   border: none;
   border-bottom: 1px solid #fff;
-}
-.welcomePanel .nameInput ::-webkit-input-placeholder {
-  color: rgba(255,255,255,0.8);
 }
 .welcomePanel .userBtn {
   display: block;
@@ -249,9 +243,6 @@
   overflow: auto;
   resize: none;
   border-bottom: 1px solid #fff;
-}
-.monthLog .addLog ::-webkit-input-placeholder {
-  color: rgba(255,255,255,0.8);
 }
 .monthLog .logDetail {
   width: 1000px;
@@ -397,8 +388,7 @@ td {
 a img {
   border: none;
 }
-html,
-body {
+html {
   font-family: 'Microsoft YaHei', Helvatica, Arial, 'SongTi', 'Sans-serif';
   font-size: 16px;
 }
@@ -414,4 +404,24 @@ a:hover {
 }
 #main {
   height: 100%;
+}
+::-webkit-input-placeholder {
+  color: rgba(255,255,255,0.8);
+}
+::-moz-placeholder {
+  color: rgba(255,255,255,0.8);
+}
+:-moz-placeholder {
+  color: rgba(255,255,255,0.8);
+}
+:-ms-input-placeholder {
+  color: rgba(255,255,255,0.8);
+}
+::selection {
+  background: #5298fc;
+  color: #fff;
+}
+::-moz-selection {
+  background: #5298fc;
+  color: #fff;
 }
