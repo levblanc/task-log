@@ -7,7 +7,11 @@ var bodyParser = require('body-parser');
 var express    = require('express');
 var json2csv   = require('json2csv');
 var port       = require('./portConfig');
+
 var dbPath     = path.join(__dirname, 'app/shared/db');
+var userDB    = path.join(dbPath, 'user.json');
+var logDB     = path.join(dbPath, 'taskLog.json');
+var logListDB = path.join(dbPath, 'userLogList.json');
 
 var app    = express();
 var server = http.createServer(app);
@@ -15,10 +19,6 @@ var server = http.createServer(app);
 app.use(express.static(path.join(__dirname, 'app/assets')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-var userDB    = path.join(dbPath, 'user.json');
-var logDB     = path.join(dbPath, 'taskLog.json');
-var logListDB = path.join(dbPath, 'userLogList.json');
 
 
 function getHumanDate(currentDate){
