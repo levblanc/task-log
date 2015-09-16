@@ -16,22 +16,22 @@ app.use(express.static(path.join(__dirname, 'app/assets')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-var userDB        = path.join(dbPath, 'user.json');
-var logDB         = path.join(dbPath, 'taskLog.json');
-var logListDB     = path.join(dbPath, 'userLogList.json');
+var userDB    = path.join(dbPath, 'user.json');
+var logDB     = path.join(dbPath, 'taskLog.json');
+var logListDB = path.join(dbPath, 'userLogList.json');
 
 
 function getHumanDate(currentDate){
     var humanDate, dateArr, timeArr, year, month, date, hour, min, sec;
 
-    year  = currentDate.getFullYear();
-    month = currentDate.getMonth();
-    date  = currentDate.getDate();
+    year    = currentDate.getFullYear();
+    month   = currentDate.getMonth();
+    date    = currentDate.getDate();
     dateArr = new Array(year, month, date);
 
-    hour  = currentDate.getHours();
-    min   = currentDate.getMinutes();
-    sec   = currentDate.getSeconds();
+    hour    = currentDate.getHours();
+    min     = currentDate.getMinutes();
+    sec     = currentDate.getSeconds();
     timeArr = new Array(hour, min, sec);
 
     _.each(dateArr, function (item, index) {
@@ -74,7 +74,7 @@ app.get('/user-loglist', function (req, res) {
             var filterOpts = {
                 userName: req.query.userName
             };
-            // var targetUserLogList = _.pluck(_.filter(JSON.parse(data), filterOpts), 'logMonth');
+
             var targetUserLogList = _.filter(JSON.parse(data), filterOpts);
 
             res.send(targetUserLogList);
@@ -128,7 +128,6 @@ app.post('/user', function (req, res) {
 app.post('/user-loglist', function (req, res) {
     var userLogList = null;
     var userLogItem = req.body;
-    userLogItem.id = ++ userLogItemId;
 
     fs.readFile(logListDB, 'utf-8', function (err, data) {
         if(err) throw err;

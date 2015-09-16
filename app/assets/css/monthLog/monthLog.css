@@ -83,6 +83,7 @@
 .monthLog .logDetail .logTable th,
 .monthLog .logDetail .logTable td {
   text-align: center;
+  word-break: break-all;
 }
 .monthLog .logDetail .logTable thead th {
   padding: 10px 0;
@@ -98,16 +99,16 @@
   padding: 10px 0;
 }
 .monthLog .logDetail .logTable tbody .logIndex {
-  width: 10%;
+  width: 8%;
 }
 .monthLog .logDetail .logTable tbody .logContent {
   width: 70%;
 }
 .monthLog .logDetail .logTable tbody .logStatus {
-  width: 13%;
+  width: 14%;
 }
 .monthLog .logDetail .logTable tbody .delete {
-  width: 7%;
+  width: 8%;
 }
 .monthLog .logDetail .logTable tbody .delete a {
   color: #5a6b77;
