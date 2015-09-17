@@ -1,0 +1,1 @@
+var Backbone=require("backbone"),Router=require("./router"),appRouter=new Router;Backbone.history.start({pushState:!0});

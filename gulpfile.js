@@ -5,9 +5,15 @@ var fs           = require('fs');
 var path         = require('path');
 var gulp         = require('gulp');
 var stylus       = require('gulp-stylus');
+var changed      = require('gulp-changed');
 var plumber      = require('gulp-plumber');
-// var server    = require('gulp-develop-server');
 var nodemon      = require('gulp-nodemon');
+var copy         = require('gulp-copy');
+var cssmin       = require('gulp-cssmin');
+var uglify       = require('gulp-uglify');
+var mkdirp       = require('mkdirp');
+var del          = require('del');
+var runSequence  = require('run-sequence');
 var browserify   = require('browserify');
 var jadeify      = require('jadeify');
 var browserSync  = require('browser-sync');
@@ -15,7 +21,7 @@ var source       = require('vinyl-source-stream');
 var bowerResolve = require('bower-resolve');
 var nib          = require('nib');
 
-var serverPort = require('./portConfig');
+var serverPort = 6290;
 var production = (process.env.NODE_ENV === 'production');
 
 /**
@@ -25,7 +31,7 @@ function getBowerPkgIds(){
     var bowerManifest = {};
 
     try{
-        bowerManifest = require('./bower.json');
+        bowerManifest = require('bower.json');
     }catch(e){
         console.log(e);
     }
@@ -40,49 +46,17 @@ function getBowerPkgIds(){
     return bowerPkgIds;
 }
 
-
-var options = {
-    server: {
-        path: './server.js'
-    },
-    browserSync: {
-        proxy: 'http://localhost:' + serverPort,
-        port: 4000
-    }
-};
-
-/**
- * 启动server
- */
-gulp.task('server:start', function () {
-    server.listen(options.server, function(error) {
-        if(!error) browserSync(options.browserSync);
-    });
-});
-
-/**
- * 如果app.js有变动，重启server并刷新browser
- */
-gulp.task('server:restart', function () {
-    server.restart(function(error) {
-        if(!error){
-            browserSync.reload();
-        }else{
-            browserSync(options.browserSync);
-        }
-    });
-});
-
 /**
  * 编译Stylus
  */
 gulp.task('stylus', function () {
-    gulp.src('./app/assets/css/**/*.styl')
+    gulp.src('app/assets/css/**/*.styl')
         .pipe(plumber())
+        .pipe(changed('app/assets/css/'))
         .pipe(stylus(
             { use: [nib()] }
         ))
-        .pipe(gulp.dest('./app/assets/css/'))
+        .pipe(gulp.dest('app/assets/css/'))
         // .pipe(server())
         .pipe(browserSync.reload({ stream: true }));
 });
@@ -116,7 +90,7 @@ gulp.task('bundleVendors', function () {
       });
     });
 
-    var stream = b.bundle().pipe(source('./app/assets/js/vendor.js'));
+    var stream = b.bundle().pipe(source('app/assets/js/vendor.js'));
 
     // 如果是跟source同一个文件夹下，dest为相对source文件的路径
     stream.pipe(gulp.dest('./'));
@@ -153,7 +127,7 @@ gulp.task('bundleJsFiles', function (){
 });
 
 /**
- * watch 监听文件变化
+ * watch任务 监听文件变化
  */
 gulp.task('watch', function () {
     gulp.watch("app/index.html").on('change', browserSync.reload);
@@ -205,8 +179,95 @@ gulp.task('nodemon', function (cb) {
     });
 });
 
-// gulp.task('default', ['server:start', 'watch'], function() {
-//     gulp.watch('./server.js', ['server:restart']);
-// });
-//
+
+/**
+ * cleanDist任务
+ * 清除dist文件夹及其中的所有内容
+ */
+gulp.task('cleanDist', function () {
+    return del('dist/**/*').then(function (paths) {
+        console.log('Deleted files/folders:\n', paths.join('\n'));
+    });
+});
+
+/**
+ * copy任务
+ * 把最终需要用到的文件复制到dist文件夹下
+ */
+gulp.task('copy', function () {
+    return gulp.src([
+            './server.js',
+            'app/index.html',
+            'app/assets/css/main.css',
+            'app/assets/js/*'
+        ])
+        .pipe(copy('dist/'));
+});
+
+/**
+ * mkdirs任务
+ * 创建数据库文件夹db
+ * 创建csv文件夹
+ */
+gulp.task('mkdirs', function () {
+    _.each(['dist/app/db', 'dist/app/csv'], function (dir, index) {
+        return mkdirp(dir, function (err) {
+            if(err) console.error(err);
+            else console.dir(dir + ' created');
+        });
+    });
+});
+
+/**
+ * createDBfiles任务
+ * 创建json文件作为本地数据储存
+ */
+gulp.task('createDBfiles', function () {
+    _.each([
+        'dist/app/db/taskLog.json',
+        'dist/app/db/user.json',
+        'dist/app/db/userLogList.json'
+    ], function (file, index) {
+        return fs.writeFile(file, '', function (err) {
+            if(err) console.error(err);
+            else console.dir(file + ' created');
+        });
+    });
+});
+
+/**
+ * cssmin任务
+ * 压缩css代码
+ */
+gulp.task('cssmin', function () {
+    return gulp.src('dist/app/assets/css/main.css')
+        .pipe(cssmin())
+        .pipe(gulp.dest('dist/app/assets/css/'));
+});
+
+/**
+ * uglify任务
+ * 压缩js文件
+ */
+gulp.task('uglify', function () {
+    return gulp.src('dist/app/assets/js/*.js')
+        .pipe(uglify())
+        .pipe(gulp.dest('dist/app/assets/js/'));
+});
+
+/**
+ * 开发用default任务
+ */
 gulp.task('default', ['nodemon', 'watch']);
+
+/**
+ * production文件夹创建
+ */
+gulp.task('dist', function (cb) {
+    runSequence(
+        'cleanDist',
+        ['copy', 'mkdirs'],
+        ['cssmin', 'uglify'],
+        'createDBfiles',
+        cb);
+});

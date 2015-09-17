@@ -1,10 +1,19 @@
-### for开发
+## for开发
 1. npm install
 2. bower install
 3. gulp bundleVendors
 4. gulp
 
-### TODO
+## TODO
+
+### build project
+- css min
+- js uglify
+- 创建文件夹任务
+- dist之前先clean
+
+### 优化
+- 启动server时自动新建db里面的几个json文件
 - 首页输入姓名时，增加判断是否英文和数字，不接受中文、英文逗号、英文句号和其它特殊符号
 - 查看过往log列表排序，分tab展示不同年份
 
